@@ -10,10 +10,10 @@ import java.util.Random;
 
 public class InfectableBall {
 
-    public InfectableBall(){
-        Random rn = new Random();
-        coordinates.x =(double) rn.nextInt(SimulationCanvasParams.getWidth());
-        coordinates.y = (double)rn.nextInt(SimulationCanvasParams.getHeight());
+    public InfectableBall() {
+        /*Random rn = new Random();
+        coordinates.x = (double) rn.nextInt(SimulationCanvasParams.getWidth());
+        coordinates.y = (double) rn.nextInt(SimulationCanvasParams.getHeight());
 
 
         while((int)Math.sqrt(velocityVector.x*velocityVector.x+velocityVector.y*velocityVector.y)!=InfectableBallsParams.velocity){
@@ -32,7 +32,12 @@ public class InfectableBall {
             velocityVector.x = x*Math.cos((double)angle)-y*Math.sin((double)angle) ;
             velocityVector.y=x*Math.sin((double)angle)+y*Math.cos((double)angle);
         }
-        }
+
+
+        */
+        this.genRandomCoordinatesVelocity();
+    }
+
 
     enum InfectionStatus {
         SUSCEPTIBLE,
@@ -43,6 +48,25 @@ public class InfectableBall {
     Point2D.Double coordinates = new Point2D.Double(0,0);
     Point2D.Double velocityVector= new Point2D.Double(0,0);
 
+    public void genRandomCoordinatesVelocity(){
+        Random rn = new Random();
+        coordinates.x = (double) rn.nextInt(SimulationCanvasParams.getWidth());
+        coordinates.y = (double) rn.nextInt(SimulationCanvasParams.getHeight());
+        while(this.velocityVector.x==0||this.velocityVector.y==0){
+            this.velocityVector.x = rn.nextInt(20)-10;
+            this.velocityVector.y = rn.nextInt(20)-10;
+        }
+
+
+        //Divide by "Einheitsvektor", and multiply by the desired velocity to get the correct velocity
+        double lengthOfVector=Math.sqrt(Math.pow(this.velocityVector.x,2)+Math.pow(this.velocityVector.y,2));
+        this.velocityVector.x=this.velocityVector.x/lengthOfVector;
+        this.velocityVector.y=this.velocityVector.y/lengthOfVector;
+        this.velocityVector.x=this.velocityVector.x*InfectableBallsParams.velocity;
+        this.velocityVector.y=this.velocityVector.y*InfectableBallsParams.velocity;
+         lengthOfVector=Math.sqrt(Math.pow(this.velocityVector.x,2)+Math.pow(this.velocityVector.y,2));
+        System.out.println("len"+lengthOfVector);
+    }
     public GraphicsContext draw(GraphicsContext gc){
         if(infectionStatus == InfectionStatus.SUSCEPTIBLE){
             gc.setFill(Color.BLUE);
@@ -53,12 +77,14 @@ public class InfectableBall {
     public String print(){
         return "x:"+coordinates.x+" y:"+coordinates.y;
     }
+    //translate the ball according to it's velocity vector
     public void move(double time){
         this.coordinates.x+=this.velocityVector.x*time;
         this.coordinates.y+=this.velocityVector.y*time;
         this.checkBorderCollision();
     }
 
+    //Check if Ball is colliding with the edges of the canvas
    private void checkBorderCollision(){
         if(this.coordinates.x - InfectableBallsParams.ballradius < 0){      // Kollision linke Seite
             this.velocityVector.x =- this.velocityVector.x;
