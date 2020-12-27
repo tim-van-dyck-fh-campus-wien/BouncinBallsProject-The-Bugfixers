@@ -12,8 +12,8 @@
             xmlns:fx="http://javafx.com/fxml" fx:id="borderPane" fx:controller="at.ac.fhcampuswien.bouncingballs.controllers.MainController">
 
     <left>
-        <GridPane>
-            <VBox GridPane.rowIndex="0">
+        <GridPane fx:id="containerleft" gridLinesVisible="true">
+            <VBox GridPane.rowIndex="0" GridPane.vgrow="ALWAYS">
                 <Label text="test"></Label>
                 <Label text="test1"></Label>
             </VBox>
