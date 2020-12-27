@@ -6,9 +6,21 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
 
-            prefHeight="400.0" prefWidth="600.0">
+<?import javafx.scene.canvas.Canvas?>
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml" fx:id="borderPane" fx:controller="at.ac.fhcampuswien.bouncingballs.controllers.MainController">
 
-</AnchorPane>
+    <left>
+        <GridPane>
+            <VBox GridPane.rowIndex="0">
+                <Label text="test"></Label>
+                <Label text="test1"></Label>
+            </VBox>
+            <VBox fx:id="graphContainer" GridPane.rowIndex="1">
+
+            </VBox>
+
+        </GridPane>
+    </left>
+</BorderPane>
