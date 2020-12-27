@@ -34,7 +34,7 @@ public class InfectableBall {
         if(infectionStatus == InfectionStatus.SUSCEPTIBLE){
             gc.setFill(Color.BLUE);
         }
-        gc.fillOval(coordinates.x,coordinates.y,InfectableBallsParams.ballradius,InfectableBallsParams.ballradius);
+        gc.fillOval(coordinates.x-InfectableBallsParams.ballradius,coordinates.y-InfectableBallsParams.ballradius,InfectableBallsParams.ballradius,InfectableBallsParams.ballradius);
         return gc;
     }
     public String print(){
@@ -43,6 +43,22 @@ public class InfectableBall {
     public void move(double time){
         this.coordinates.x+=this.velocityVector.x*time;
         this.coordinates.y+=this.velocityVector.y*time;
+        this.checkBorderCollision();
+    }
+
+   private void checkBorderCollision(){
+        if(this.coordinates.x - InfectableBallsParams.ballradius < 0){      // Kollision linke Seite
+            this.velocityVector.x =- this.velocityVector.x;
+        }
+       if(this.coordinates.y - InfectableBallsParams.ballradius < 0){       // obere Seite
+           this.velocityVector.y =- this.velocityVector.y;
+       }
+       if(this.coordinates.x + InfectableBallsParams.ballradius > SimulationCanvasParams.getWidth()){       // rechte Seite
+           this.velocityVector.x =- this.velocityVector.x;
+       }
+       if(this.coordinates.y + InfectableBallsParams.ballradius > SimulationCanvasParams.getHeight()){       // rechte Seite
+           this.velocityVector.y =- this.velocityVector.y;
+       }
 
     }
 
