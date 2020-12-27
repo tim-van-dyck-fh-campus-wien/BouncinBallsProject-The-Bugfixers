@@ -1,5 +1,8 @@
 package at.ac.fhcampuswien.bouncingballs.controllers;
 
+import at.ac.fhcampuswien.bouncingballs.params.GraphCanvasParams;
+import at.ac.fhcampuswien.bouncingballs.params.SimulationCanvasParams;
+import javafx.animation.AnimationTimer;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.VPos;
@@ -33,9 +36,9 @@ public class MainController implements Initializable  {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        this.simulation = new Canvas(620,620);
+        this.simulation = new Canvas(SimulationCanvasParams.getWidth(),SimulationCanvasParams.getHeight());
         this.simulationGC=this.simulation.getGraphicsContext2D();
-        this.graph = new Canvas(500,400);
+        this.graph = new Canvas(GraphCanvasParams.getWidth(),GraphCanvasParams.getHeight());
         this.graphContainer.getChildren().add(this.graph);
         GridPane.setValignment(graphContainer, VPos.BOTTOM);
         this.graphGC=this.graph.getGraphicsContext2D();
@@ -45,8 +48,23 @@ public class MainController implements Initializable  {
 
 
 
-        this.simulationGC.fillRect(0,0,10000,10000);
+        //this.simulationGC.fillRect(0,0,10000,10000);
         this.graphGC.fillRect(0,0,10000,10000);
 
+        this.simulationTimer();
     }
+    int x=0;
+
+    public void simulationTimer(){
+        final long startNanoTime = System.nanoTime();
+        new AnimationTimer(){
+            @Override
+            public void handle(long currentNanoTime) {
+                simulationGC.clearRect(0,0,1000,1000);
+                simulationGC.fillRect(x,x,10,10);
+                x=x+1;
+            }
+        }.start();
+    }
+
 }
