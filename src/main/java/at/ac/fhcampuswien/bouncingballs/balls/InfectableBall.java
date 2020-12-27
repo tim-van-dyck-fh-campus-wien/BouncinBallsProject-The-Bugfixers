@@ -14,12 +14,25 @@ public class InfectableBall {
         Random rn = new Random();
         coordinates.x =(double) rn.nextInt(SimulationCanvasParams.getWidth());
         coordinates.y = (double)rn.nextInt(SimulationCanvasParams.getHeight());
-        int angle = rn.nextInt(360);
-        double x=InfectableBallsParams.velocity;
-        double y=0;
-        velocityVector.x = x*Math.cos((double)angle)-y*Math.sin((double)angle) ;
-        velocityVector.y=x*Math.sin((double)angle)+y*Math.sin((double)angle);
-    }
+
+
+        while((int)Math.sqrt(velocityVector.x*velocityVector.x+velocityVector.y*velocityVector.y)!=InfectableBallsParams.velocity){
+            double angledegree = (double)rn.nextInt(360);
+
+            if((angledegree%90>=0)&&((angledegree%90)<=5)||(angledegree%90>=84)&&((angledegree%90<=89))){
+                angledegree+=20;
+            }
+            double angle = Math.toRadians(angledegree);
+            //eliminate multiples of 90 degrees
+
+            double x=InfectableBallsParams.velocity;
+            double y=0;
+            System.out.println("angle: "+angle);
+
+            velocityVector.x = x*Math.cos((double)angle)-y*Math.sin((double)angle) ;
+            velocityVector.y=x*Math.sin((double)angle)+y*Math.cos((double)angle);
+        }
+        }
 
     enum InfectionStatus {
         SUSCEPTIBLE,

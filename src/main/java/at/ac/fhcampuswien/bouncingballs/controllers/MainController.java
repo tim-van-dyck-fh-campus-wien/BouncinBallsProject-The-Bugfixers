@@ -1,6 +1,7 @@
 package at.ac.fhcampuswien.bouncingballs.controllers;
 
 import at.ac.fhcampuswien.bouncingballs.balls.InfectableBall;
+import at.ac.fhcampuswien.bouncingballs.balls.InfectionStats;
 import at.ac.fhcampuswien.bouncingballs.params.GraphCanvasParams;
 import at.ac.fhcampuswien.bouncingballs.params.SimulationCanvasParams;
 import at.ac.fhcampuswien.bouncingballs.params.SimulationValues;
@@ -71,6 +72,10 @@ public class MainController implements Initializable  {
                     simulationGC=el.draw(simulationGC);
                     el.move(0.1);
                 }
+
+                InfectionStats.infektionsgeschehen();
+
+                InfectionStats.printCurStats();
             }
         }.start();
     }
