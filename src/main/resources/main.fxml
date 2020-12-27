@@ -19,8 +19,16 @@
             </VBox>
             <VBox fx:id="graphContainer" GridPane.rowIndex="1">
 
+
             </VBox>
 
         </GridPane>
     </left>
+    <bottom>
+        <HBox prefHeight="100">
+            <Label text="test"></Label>
+            <Label text="test"></Label>
+        </HBox>
+
+    </bottom>
 </BorderPane>

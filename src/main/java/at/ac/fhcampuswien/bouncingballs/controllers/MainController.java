@@ -33,7 +33,7 @@ public class MainController implements Initializable  {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        this.simulation = new Canvas(550,550);
+        this.simulation = new Canvas(620,620);
         this.simulationGC=this.simulation.getGraphicsContext2D();
         this.graph = new Canvas(500,400);
         this.graphContainer.getChildren().add(this.graph);
