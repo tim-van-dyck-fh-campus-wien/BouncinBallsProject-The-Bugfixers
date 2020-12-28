@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+
+<?import javafx.scene.canvas.Canvas?>
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml" fx:id="borderPane" fx:controller="at.ac.fhcampuswien.bouncingballs.controllers.homepage">
+
+    <top>
+        <GridPane fx:id="title" alignment="TOP_CENTER" >
+            <VBox>
+                <Label text=""></Label>
+                <Label text="The Bugfixers"></Label>
+                <Label text="Pandemic"></Label>
+                <Label text=""></Label>
+                <Label text=""></Label>
+            </VBox>
+
+        </GridPane>
+    </top>
+<center>
+    <GridPane fx:id="data" alignment="BASELINE_CENTER">
+        <VBox>
+            <Label text="Population Size: "></Label>
+            <Label text="Infectiousness: "></Label>
+        </VBox>
+    </GridPane>
+</center>
+
+    <bottom>
+        <VBox>
+            <Button fx:id="button" onAction="#manageButton" prefWidth="150.0" prefHeight="80"
+                text="START" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+        </VBox>
+
+    </bottom>
+
+
+
+</BorderPane>
+

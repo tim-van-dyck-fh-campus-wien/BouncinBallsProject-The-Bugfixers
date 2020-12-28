@@ -11,7 +11,7 @@ import javafx.stage.Stage;
 public class Main extends Application{
     @Override
     public void start(Stage primaryStage) throws Exception {
-        Parent root = FXMLLoader.load(getClass().getResource("/main.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("/homepage.fxml"));
 
         Scene scene = new Scene(root, 1280, 720);
         //primaryStage.setFullScreen(true);
@@ -20,7 +20,7 @@ public class Main extends Application{
         // Animation: either Timeline with Keyframe or
         // AnimationTimer http://zetcode.com/gui/javafx/animation/
 
-        primaryStage.setTitle("Hello Robot");
+        primaryStage.setTitle("Bouncing-Balls");
         primaryStage.setScene(scene);
         primaryStage.show();
     }
