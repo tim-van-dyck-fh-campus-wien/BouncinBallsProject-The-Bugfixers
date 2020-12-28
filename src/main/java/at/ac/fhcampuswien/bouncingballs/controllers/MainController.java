@@ -1,10 +1,15 @@
 package at.ac.fhcampuswien.bouncingballs.controllers;
 
 import at.ac.fhcampuswien.bouncingballs.balls.InfectableBall;
+import at.ac.fhcampuswien.bouncingballs.balls.InfectableBalls;
 import at.ac.fhcampuswien.bouncingballs.balls.InfectionStats;
+import at.ac.fhcampuswien.bouncingballs.balls.QuadTree;
 import at.ac.fhcampuswien.bouncingballs.params.GraphCanvasParams;
 import at.ac.fhcampuswien.bouncingballs.params.SimulationCanvasParams;
 import at.ac.fhcampuswien.bouncingballs.params.SimulationValues;
+import at.ac.fhcampuswien.bouncingballs.shapes.Circle;
+import at.ac.fhcampuswien.bouncingballs.shapes.Point;
+import at.ac.fhcampuswien.bouncingballs.shapes.Rectangle;
 import javafx.animation.AnimationTimer;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -37,8 +42,8 @@ public class MainController implements Initializable  {
     @FXML
     GridPane containerleft;
 
-    List<InfectableBall> balls = new ArrayList<>();
-
+    //List<InfectableBall> balls = new ArrayList<>();
+    InfectableBalls balls = new InfectableBalls();
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -55,8 +60,9 @@ public class MainController implements Initializable  {
 
 
         //this.simulationGC.fillRect(0,0,10000,10000);
-        this.graphGC.fillRect(0,0,10000,10000);
-        this.initializeBalls();
+        this.graphGC.fillRect(0,0,SimulationCanvasParams.getWidth(),SimulationCanvasParams.getHeight());
+        //this.initializeBalls();
+        this.balls.generateBalls();
         this.simulationTimer();
     }
     int x=0;
@@ -67,27 +73,38 @@ public class MainController implements Initializable  {
             @Override
             public void handle(long currentNanoTime) {
 
+                //Clear canvas, set BackgroundColor
                 simulationGC.clearRect(0,0,1000,1000);
-                for(InfectableBall el : balls){
-                    simulationGC=el.draw(simulationGC);
-                    el.move(0.1);
+                simulationGC.setFill(Color.BLACK);
+                simulationGC.fillRect(0,0,1000,1000);
+
+                //handles everything sorrounding the Infectable balls
+                simulationGC = balls.drawAndHandleTimestep(simulationGC,currentNanoTime);
+
+
+                //Quadtree Test
+                double x,y,w,h;
+                x=SimulationCanvasParams.getWidth()/2;
+                y=SimulationCanvasParams.getHeight()/2;
+                w=20;
+                h=20;
+                double r=100;
+                Circle searchCirc = new Circle(x,y,r);
+
+                Rectangle searchRange = new Rectangle(x,y,w,h);
+                simulationGC.setStroke(Color.ROSYBROWN);
+               // simulationGC.strokeRect(x-w,y-h,w*2,h*2);
+                simulationGC.fillOval(x-r,y-r,r*2,r*2);
+                for(Point p: balls.tree.query(searchCirc)){
+                    simulationGC.setFill(Color.BLUEVIOLET);
+                    double radius = 5;
+                    simulationGC.fillOval(p.x-radius,p.y-radius,radius*2,radius*2);
                 }
+               // InfectionStats.infektionsgeschehen();
 
-                InfectionStats.infektionsgeschehen();
-
-                InfectionStats.printCurStats();
+               // InfectionStats.printCurStats();
             }
         }.start();
-    }
-    public void initializeBalls(){
-        for(int c =0;c<SimulationValues.getBallCount();c++){
-            this.balls.add(new InfectableBall());
-        }
-        int c=0;
-        for(InfectableBall el : balls){
-            System.out.println(c+" "+el.print());
-            System.out.println("))))");
-        }
     }
 
 }

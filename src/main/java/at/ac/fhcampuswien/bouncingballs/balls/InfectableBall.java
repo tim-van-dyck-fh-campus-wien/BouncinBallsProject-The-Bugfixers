@@ -2,6 +2,7 @@ package at.ac.fhcampuswien.bouncingballs.balls;
 
 import at.ac.fhcampuswien.bouncingballs.params.InfectableBallsParams;
 import at.ac.fhcampuswien.bouncingballs.params.SimulationCanvasParams;
+import at.ac.fhcampuswien.bouncingballs.shapes.Point;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
@@ -10,48 +11,47 @@ import java.util.Random;
 
 public class InfectableBall {
 
-    public InfectableBall() {
-        /*Random rn = new Random();
-        coordinates.x = (double) rn.nextInt(SimulationCanvasParams.getWidth());
-        coordinates.y = (double) rn.nextInt(SimulationCanvasParams.getHeight());
-
-
-        while((int)Math.sqrt(velocityVector.x*velocityVector.x+velocityVector.y*velocityVector.y)!=InfectableBallsParams.velocity){
-            double angledegree = (double)rn.nextInt(360);
-
-            if((angledegree%90>=0)&&((angledegree%90)<=5)||(angledegree%90>=84)&&((angledegree%90<=89))){
-                angledegree+=20;
-            }
-            double angle = Math.toRadians(angledegree);
-            //eliminate multiples of 90 degrees
-
-            double x=InfectableBallsParams.velocity;
-            double y=0;
-            System.out.println("angle: "+angle);
-
-            velocityVector.x = x*Math.cos((double)angle)-y*Math.sin((double)angle) ;
-            velocityVector.y=x*Math.sin((double)angle)+y*Math.cos((double)angle);
-        }
-
-
-        */
-        this.genRandomCoordinatesVelocity();
-    }
-
-
     enum InfectionStatus {
         SUSCEPTIBLE,
         INFECTED,
         REMOVED
     }
     InfectionStatus infectionStatus = InfectionStatus.SUSCEPTIBLE;
-    Point2D.Double coordinates = new Point2D.Double(0,0);
-    Point2D.Double velocityVector= new Point2D.Double(0,0);
+    private Point coordinates = new Point(0,0);
+    private Point velocityVector= new Point(0,0);
+    private String id;
+    //Counts how many Infectable balls have been generated, needed for the corresponding id identifying the Object
+    private static int instanceCount=0;
 
+
+    public Point getCoordinates(){
+        return this.coordinates;
+    }
+    public InfectableBall() {
+        this.genRandomCoordinatesVelocity();
+        this.generateIdOfObject();
+        instanceCount+=1;
+    }
+    public String getIdOfInstance(){
+        return this.id;
+    }
+    //Generate the id of the instance
+    private void generateIdOfObject(){
+        this.id=Integer.toString(instanceCount);
+    }
+    //Must be called when a new List of Infectable balls wants to be generated
+    //needed to correctly generate the id's identifying each instance of a Infectable Balls
+    public static void resetInfectableBalls(){
+        instanceCount=0;
+    }
     public void genRandomCoordinatesVelocity(){
         Random rn = new Random();
-        coordinates.x = (double) rn.nextInt(SimulationCanvasParams.getWidth());
-        coordinates.y = (double) rn.nextInt(SimulationCanvasParams.getHeight());
+
+        //generate random coordiantes, leave space of the balls radius
+        coordinates.x = (double) rn.nextInt(SimulationCanvasParams.getWidth()-InfectableBallsParams.ballradius*2)+InfectableBallsParams.ballradius;
+        coordinates.y = (double) rn.nextInt(SimulationCanvasParams.getHeight()-InfectableBallsParams.ballradius*2)+InfectableBallsParams.ballradius;
+
+        //exclude degrees of multiples of 90 degrees while computing the values for the velocity vector
         while(this.velocityVector.x==0||this.velocityVector.y==0){
             this.velocityVector.x = rn.nextInt(20)-10;
             this.velocityVector.y = rn.nextInt(20)-10;
@@ -71,7 +71,8 @@ public class InfectableBall {
         if(infectionStatus == InfectionStatus.SUSCEPTIBLE){
             gc.setFill(Color.BLUE);
         }
-        gc.fillOval(coordinates.x-InfectableBallsParams.ballradius,coordinates.y-InfectableBallsParams.ballradius,InfectableBallsParams.ballradius,InfectableBallsParams.ballradius);
+        //fillOval uses the top left corner, and the last two parameters describe the diameter of the oval, thus the radius is multiplied by 2
+        gc.fillOval(coordinates.x-InfectableBallsParams.ballradius,coordinates.y-InfectableBallsParams.ballradius,InfectableBallsParams.ballradius*2,InfectableBallsParams.ballradius*2);
         return gc;
     }
     public String print(){
