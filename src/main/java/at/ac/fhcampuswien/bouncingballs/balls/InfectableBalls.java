@@ -2,12 +2,14 @@ package at.ac.fhcampuswien.bouncingballs.balls;
 
 import at.ac.fhcampuswien.bouncingballs.params.SimulationCanvasParams;
 import at.ac.fhcampuswien.bouncingballs.params.SimulationValues;
+import at.ac.fhcampuswien.bouncingballs.shapes.Circle;
 import at.ac.fhcampuswien.bouncingballs.shapes.Point;
 import at.ac.fhcampuswien.bouncingballs.shapes.Rectangle;
 import javafx.scene.canvas.GraphicsContext;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 //Class containing a List of Infectable Balls, and functions sourrounding it
 public class InfectableBalls {
@@ -30,6 +32,7 @@ public class InfectableBalls {
         this.resetQuadtree();
         this.moveAllBalls(0.1);
         this.fillQuadtree();
+       // this.handleCollision();
         return draw(gc);
 
     }
@@ -54,6 +57,26 @@ public class InfectableBalls {
     //removes all points from the quadtree
     private void resetQuadtree(){
         this.tree=new QuadTree(new Rectangle(SimulationCanvasParams.getWidth()/2,SimulationCanvasParams.getHeight()/2,SimulationCanvasParams.getWidth()/2,SimulationCanvasParams.getHeight()/2),(byte)8);
-    }
+    }/*
+    private void handleCollision(){
+        List <InfectableBall> collisionHandled = new ArrayList<>();
+        List <InfectableBall> toHandle = new ArrayList();
+        for(InfectableBall el : balls){
+            toHandle.add(el);
+        }
+        double infectionRadius=2;
+        for(int c=0;c<toHandle.size();){
+            InfectableBall ball = toHandle.get(c);
+            Circle infectionCircle = new Circle(ball.getCoordinates().x,ball.getCoordinates().y,infectionRadius);
+            for(Point point :tree.query(infectionCircle)){
+                List<InfectableBall> res=balls.stream().filter(v->(v.getIdOfInstance()==point.id)).collect(Collectors.toList());
+                for(InfectableBall el : res){
+                    el.infectionStatus= InfectableBall.InfectionStatus.INFECTED;
+                    System.out.println(el.print());
+                }
+            }
+
+        }
+    }*/
 
 }

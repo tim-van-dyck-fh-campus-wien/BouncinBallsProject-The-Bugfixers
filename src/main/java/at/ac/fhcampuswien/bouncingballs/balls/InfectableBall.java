@@ -70,6 +70,8 @@ public class InfectableBall {
     public GraphicsContext draw(GraphicsContext gc){
         if(infectionStatus == InfectionStatus.SUSCEPTIBLE){
             gc.setFill(Color.BLUE);
+        }else if(infectionStatus== InfectionStatus.INFECTED){
+            gc.setFill(Color.RED);
         }
         //fillOval uses the top left corner, and the last two parameters describe the diameter of the oval, thus the radius is multiplied by 2
         gc.fillOval(coordinates.x-InfectableBallsParams.ballradius,coordinates.y-InfectableBallsParams.ballradius,InfectableBallsParams.ballradius*2,InfectableBallsParams.ballradius*2);
