@@ -60,34 +60,46 @@ public class InfectableBalls {
     private void resetQuadtree(){
         this.tree=new QuadTree(new Rectangle(SimulationCanvasParams.getWidth()/2,SimulationCanvasParams.getHeight()/2,SimulationCanvasParams.getWidth()/2,SimulationCanvasParams.getHeight()/2),(byte)8);
     }
+    //Testmethode zur ersten Simulation des Ansteckungsmechanismus
     private GraphicsContext handleCollision(GraphicsContext gc){
-        List <InfectableBall> collisionHandled = new ArrayList<>();
+        //List <InfectableBall> collisionHandled = new ArrayList<>();
+        //Dummy Liste bestehend aus allen Bällen,
         List <InfectableBall> toHandle = new ArrayList<>();
         for(InfectableBall el : balls){
             toHandle.add(el);
         }
+        //Infectionsradius, in welchem ein ball infiziert wird! Beim Quadtree wird hier der doppelte radius verwendet
+        //da hier auch die größe des anderen balls zählt
         double infectionRadius= InfectableBallsParams.ballradius;
+        //Loop welcher die Balliste durchgeht
+        //Und überprüft ob dieser ball infiziert ist, falls er infiziert ist,
+        //wird der Quadtree genutzt, um andere Bälle zu finden welche in seinem Infektionsradius sind
+        //Falls Bälle gefunden werden, werden diese infiziert
         for(int c=0;c<toHandle.size();){
             InfectableBall ball = toHandle.get(c);
+           //Zeichnen des Infektionskreises um den derzeitigen Ball
             gc.setStroke(Color.WHITE);
             gc.strokeOval(ball.getCoordinates().x-infectionRadius,ball.getCoordinates().y-infectionRadius,2*infectionRadius,2*infectionRadius);
             //gc.strokeRect(ball.getCoordinates().x-infectionRadius,ball.getCoordinates().y-infectionRadius,2*infectionRadius,2*infectionRadius);
+           //Erstellen des Kreises welcher dem Infektionsradius entspricht, um den Quadtree zu durchsuchen
             Circle infectionCircle = new Circle(ball.getCoordinates().x,ball.getCoordinates().y,infectionRadius*2);
            // Rectangle infectionRect = new Rectangle(ball.getCoordinates().x,ball.getCoordinates().y,infectionRadius,infectionRadius);
+
+          //Suche nur nach Bällen welche in der Nähe des Balls sind, falls der derzeitige Ball infiziert ist
+            //Denn nur dann kann der Ball einen anderen Ball infizieren
            if(ball.infectionStatus== InfectableBall.InfectionStatus.INFECTED) {
                for (Point point : tree.query(infectionCircle)) {
+                  //Nur jener ball soll infiziert werden, welcher noch nicht infiziert ist
                    if (point.id != ball.getIdOfInstance()) {
-
-
+                        //Suche jenen Ball welcher dem vom Quadtree zurückgegebenen Point enstpricht
+                       //Dies basiert auf der im Point abgespeicherten ID des Balls welche bei der Instanzierung
+                       //vergeben wird
                        List<InfectableBall> res = balls.stream().filter(v -> (v.getIdOfInstance() == point.id)).collect(Collectors.toList());
-                       if (ball.infectionStatus == InfectableBall.InfectionStatus.INFECTED) {
-
-
-                           for (InfectableBall el : res) {
+                          for (InfectableBall el : res) {
+                              //Infiziere jenen ball welcher im Infektionsradius des ürsprünglichen infizierten Balls ist
                                el.infectionStatus = InfectableBall.InfectionStatus.INFECTED;
-                               System.out.println(el.print());
+                              // System.out.println(el.print());
                            }
-                       }
                    }
                    //   System.out.println(point.id);
                }
