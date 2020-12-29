@@ -102,8 +102,8 @@ public class InfectableBall {
        if(this.coordinates.x + InfectableBallsParams.ballradius > SimulationCanvasParams.getWidth()){       // rechte Seite
            this.velocityVector.x =- this.velocityVector.x;
        }
-       if(this.coordinates.y + InfectableBallsParams.ballradius > SimulationCanvasParams.getHeight()){       // rechte Seite
-           this.velocityVector.y =- this.velocityVector.y;
+       if(this.coordinates.y + InfectableBallsParams.ballradius > SimulationCanvasParams.getHeight()) {       // rechte Seite
+           this.velocityVector.y = -this.velocityVector.y;
        }
 
     }

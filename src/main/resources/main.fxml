@@ -8,14 +8,33 @@
 
 
 <?import javafx.scene.canvas.Canvas?>
+<?import javafx.scene.text.Font?>
 <BorderPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml" fx:id="borderPane" fx:controller="at.ac.fhcampuswien.bouncingballs.controllers.MainController">
 
     <left>
         <GridPane fx:id="containerleft" gridLinesVisible="true">
             <VBox GridPane.rowIndex="0" GridPane.vgrow="ALWAYS">
-                <Label text="test"></Label>
-                <Label text="test1"></Label>
+                <HBox GridPane.hgrow="ALWAYS">
+                    <Label text="Population: " styleClass="label-count" />
+                    <Label fx:id="populationCount" styleClass="label-count" />
+                </HBox>
+                <HBox GridPane.hgrow="ALWAYS">
+                    <Label text="Infected: " styleClass="label-count" />
+                    <Label fx:id="infectedCount" styleClass="label-count"/>
+                </HBox>
+                <HBox GridPane.hgrow="ALWAYS">
+                    <Label text="Susceptible: " styleClass="label-count" />
+                    <Label fx:id="susceptibleCount" styleClass="label-count" />
+                </HBox>
+                <HBox GridPane.hgrow="ALWAYS">
+                    <Label text="Removed: " styleClass="label-count" />
+                    <Label fx:id="removedCount" styleClass="label-count" />
+                </HBox>
+                <HBox GridPane.hgrow="ALWAYS">
+                    <Label text="Infectionrate: " styleClass="label-count" />
+                    <Label fx:id="infectionrate" styleClass="label-count" />
+                </HBox>
             </VBox>
             <VBox fx:id="graphContainer" GridPane.rowIndex="1">
 

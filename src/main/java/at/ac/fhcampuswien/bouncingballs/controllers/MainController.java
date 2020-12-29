@@ -16,6 +16,7 @@ import javafx.fxml.Initializable;
 import javafx.geometry.VPos;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
@@ -42,6 +43,22 @@ public class MainController implements Initializable  {
     @FXML
     GridPane containerleft;
 
+    @FXML
+    private Label populationCount;
+
+    @FXML
+    private Label infectedCount;
+
+    @FXML
+    private Label susceptibleCount;
+
+    @FXML
+    private Label removedCount;
+
+    @FXML
+    private Label infectionrate;
+
+
     //List<InfectableBall> balls = new ArrayList<>();
     InfectableBalls balls = new InfectableBalls();
 
@@ -56,7 +73,6 @@ public class MainController implements Initializable  {
         this.simulationGC.setFill(Color.BLACK);
         this.graphGC.setFill(Color.RED);
         this.borderPane.setRight(this.simulation);
-
 
 
         //this.simulationGC.fillRect(0,0,10000,10000);
@@ -104,6 +120,13 @@ public class MainController implements Initializable  {
                // InfectionStats.infektionsgeschehen();
 
                // InfectionStats.printCurStats();
+                populationCount.setText(Integer.toString(SimulationValues.getBallCount()));
+                infectedCount.setText(Integer.toString(InfectionStats.getInfectedBalls()));
+                susceptibleCount.setText(Integer.toString(InfectionStats.getSusceptibleBalls()));
+                removedCount.setText(Integer.toString(InfectionStats.getRemovedBalls()));
+                infectionrate.setText(Integer.toString(InfectionStats.getInfectionRate()));
+
+
             }
         }.start();
     }

@@ -14,6 +14,7 @@ public class Main extends Application{
         Parent root = FXMLLoader.load(getClass().getResource("/main.fxml"));
 
         Scene scene = new Scene(root, 1280, 720);
+        scene.getStylesheets().add("/style.css");
         //primaryStage.setFullScreen(true);
         // We can add EventHandler also to the scene if appropriate: clicking, exiting...
 

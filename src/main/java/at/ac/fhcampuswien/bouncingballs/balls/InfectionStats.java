@@ -20,6 +20,10 @@ public class InfectionStats {
     public static int getRemovedBalls() {
         return removedBalls;
     }
+    public static int getInfectionRate() {
+        return removedBalls+infectedBalls+susceptibleBalls;
+    }
+
     public static void infektionsgeschehen(){
         Random rn = new Random();
        int rand =  rn.nextInt(100);
