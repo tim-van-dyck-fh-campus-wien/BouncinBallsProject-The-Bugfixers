@@ -83,7 +83,8 @@ public class MainController implements Initializable  {
 
 
                 //Quadtree Test
-                double x,y,w,h;
+
+                /*double x,y,w,h;
                 x=SimulationCanvasParams.getWidth()/2;
                 y=SimulationCanvasParams.getHeight()/2;
                 w=20;
@@ -99,7 +100,7 @@ public class MainController implements Initializable  {
                     simulationGC.setFill(Color.BLUEVIOLET);
                     double radius = 5;
                     simulationGC.fillOval(p.x-radius,p.y-radius,radius*2,radius*2);
-                }
+                }*/
                // InfectionStats.infektionsgeschehen();
 
                // InfectionStats.printCurStats();

@@ -105,10 +105,11 @@ public class QuadTree{
 
     public ArrayList<Point> query(Circle range){//Query by a circle
         ArrayList<Point> found = new ArrayList<>();//List containing all the found points within the range
+        Rectangle InscribebSquareOfCircle = new Rectangle(range.x,range.y, range.radius, range.radius);
         //If the given point is not within the boundarys of this quadtree
         //neither this quadtree nor it's children can contain this point
         //thus return an empty array
-        if(!this.boundary.intersects(range)){
+        if(!this.boundary.intersects(InscribebSquareOfCircle)){
             return found;
         }else{
             //otherwise check if any of the quadtrees points are within the given search range

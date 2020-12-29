@@ -28,9 +28,13 @@ public class InfectableBall {
         return this.coordinates;
     }
     public InfectableBall() {
-        this.genRandomCoordinatesVelocity();
-        this.generateIdOfObject();
-        instanceCount+=1;
+        if(instanceCount==0) {
+            this.infectionStatus = InfectionStatus.INFECTED;
+        }
+            this.genRandomCoordinatesVelocity();
+            this.generateIdOfObject();
+            instanceCount += 1;
+
     }
     public String getIdOfInstance(){
         return this.id;
