@@ -32,9 +32,10 @@ public class InfectableBalls {
     //draws the balls, moves them, handles collisions etc.
     public GraphicsContext drawAndHandleTimestep(GraphicsContext gc,double time){
         this.resetQuadtree();
-        this.moveAllBalls(0.1);
         this.fillQuadtree();
+        //The collision Handling has to happen prior to the move operation of the balls!
         gc=this.handleCollision(gc);
+        this.moveAllBalls(0.1);
         return draw(gc);
 
     }
@@ -78,8 +79,8 @@ public class InfectableBalls {
         for(int c=0;c<toHandle.size();){
             InfectableBall ball = toHandle.get(c);
            //Zeichnen des Infektionskreises um den derzeitigen Ball
-            gc.setStroke(Color.WHITE);
-            gc.strokeOval(ball.getCoordinates().x-infectionRadius,ball.getCoordinates().y-infectionRadius,2*infectionRadius,2*infectionRadius);
+            //gc.setStroke(Color.WHITE);
+            //gc.strokeOval(ball.getCoordinates().x-infectionRadius,ball.getCoordinates().y-infectionRadius,2*infectionRadius,2*infectionRadius);
             //gc.strokeRect(ball.getCoordinates().x-infectionRadius,ball.getCoordinates().y-infectionRadius,2*infectionRadius,2*infectionRadius);
            //Erstellen des Kreises welcher dem Infektionsradius entspricht, um den Quadtree zu durchsuchen
             Circle infectionCircle = new Circle(ball.getCoordinates().x,ball.getCoordinates().y,infectionRadius*2);
@@ -99,7 +100,24 @@ public class InfectableBalls {
                               //Infiziere jenen ball welcher im Infektionsradius des ürsprünglichen infizierten Balls ist
                                el.infectionStatus = InfectableBall.InfectionStatus.INFECTED;
                               // System.out.println(el.print());
+                              Point firstVelocityVector = ball.getVelocityVector();
+                              Point secondVelocityVector = el.getVelocityVector();
+                              Point newFirstVelocityVector = new Point(0,0);
+                              Point newSecondVelocityVector = new Point(0,0);
+
+                            //Calculate velocity vectors after collision
+                              newFirstVelocityVector.x =   secondVelocityVector.x;
+                              newFirstVelocityVector.y = secondVelocityVector.y;
+                              newSecondVelocityVector.x = firstVelocityVector.x;
+                              newSecondVelocityVector.y = firstVelocityVector.y;
+
+
+                              ball.setVelocityVector(newFirstVelocityVector);
+                              el.setVelocityVector(newSecondVelocityVector);
+                              toHandle.remove(el);
+
                            }
+                          toHandle.remove(ball);
                    }
                    //   System.out.println(point.id);
                }
@@ -108,6 +126,11 @@ public class InfectableBalls {
 
         }
         return gc;
+    }
+
+    public static Point calculateVectorBetweenTwoPointsAndStretch(Point a, Point b, double velocity){
+        Point vector = Point.calculateVectorBetweenTwoPoints(a,b);
+        return Point.stretchVectorToVelocity(vector,velocity);
     }
 
 }

@@ -30,5 +30,32 @@ public class Point {
         }
 
     }
+    public static Point calculateVectorBetweenTwoPoints(Point a, Point b){
+        Point res = new Point(0,0);
+        res.x=a.x-b.x;
+        res.y=a.y-b.y;
+        return res;
+    }
+    public static Point multiplyVectorByScalar(Point vector,double number){
+        Point res = new Point(0,0);
+        res.x = vector.x*number;
+        res.y = vector.y*number;
+        return res;
+    }
+    public static Point divideVectorByScalar(Point vector,double number){
+        Point res = new Point(vector.x,vector.y);
+        res.x=vector.x/number;
+        res.y=vector.y/number;
+        return res;
+    }
+    public static Point stretchVectorToVelocity(Point vector,double velocity){
+        Point res = new Point(0,0);
+        double length = calculateLengthOfVector(vector);
+        res = divideVectorByScalar(vector,length);
+        return multiplyVectorByScalar(res,velocity);
+    }
+    public static double calculateLengthOfVector(Point vector){
+        return Math.sqrt(Math.pow(vector.x,2)+Math.pow(vector.y,2));
+    }
 
 }

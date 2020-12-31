@@ -24,9 +24,22 @@ public class InfectableBall {
     private static int instanceCount=0;
 
 
+    public Point getVelocityVector() {
+        return velocityVector;
+    }
+
+    public void setVelocityVector(Point velocityVector) {
+        this.velocityVector = velocityVector;
+    }
+
     public Point getCoordinates(){
         return this.coordinates;
     }
+
+    public void setCoordinates(Point coordinates) {
+        this.coordinates = coordinates;
+    }
+
     public InfectableBall() {
         if(instanceCount==0) {
             this.infectionStatus = InfectionStatus.INFECTED;
