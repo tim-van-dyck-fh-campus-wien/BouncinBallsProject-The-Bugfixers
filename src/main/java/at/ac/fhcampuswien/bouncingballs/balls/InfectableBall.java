@@ -40,6 +40,15 @@ public class InfectableBall {
         this.coordinates = coordinates;
     }
 
+    public InfectableBall(Point coordinates){
+        if(instanceCount==0) {
+            this.infectionStatus = InfectionStatus.INFECTED;
+        }
+        this.coordinates=coordinates;
+        this.genRandomVelocitys();
+        this.generateIdOfObject();
+        instanceCount+=1;
+    }
     public InfectableBall() {
         if(instanceCount==0) {
             this.infectionStatus = InfectionStatus.INFECTED;
@@ -61,6 +70,23 @@ public class InfectableBall {
     public static void resetInfectableBalls(){
         instanceCount=0;
     }
+   public void genRandomVelocitys(){
+       Random rn = new Random();
+       while(this.velocityVector.x==0||this.velocityVector.y==0){
+           this.velocityVector.x = rn.nextInt(20)-10;
+           this.velocityVector.y = rn.nextInt(20)-10;
+       }
+
+
+       //Divide by "Einheitsvektor", and multiply by the desired velocity to get the correct velocity
+       double lengthOfVector=Math.sqrt(Math.pow(this.velocityVector.x,2)+Math.pow(this.velocityVector.y,2));
+       this.velocityVector.x=this.velocityVector.x/lengthOfVector;
+       this.velocityVector.y=this.velocityVector.y/lengthOfVector;
+       this.velocityVector.x=this.velocityVector.x*InfectableBallsParams.velocity;
+       this.velocityVector.y=this.velocityVector.y*InfectableBallsParams.velocity;
+       lengthOfVector=Math.sqrt(Math.pow(this.velocityVector.x,2)+Math.pow(this.velocityVector.y,2));
+       System.out.println("len"+lengthOfVector);
+   }
     public void genRandomCoordinatesVelocity(){
         Random rn = new Random();
 

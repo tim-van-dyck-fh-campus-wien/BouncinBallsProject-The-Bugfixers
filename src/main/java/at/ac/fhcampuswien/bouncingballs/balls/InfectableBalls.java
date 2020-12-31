@@ -11,6 +11,7 @@ import javafx.scene.paint.Color;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 //Class containing a List of Infectable Balls, and functions sourrounding it
@@ -18,14 +19,37 @@ public class InfectableBalls {
     List<InfectableBall> balls = new ArrayList<>();
   public QuadTree tree = new QuadTree(new Rectangle(SimulationCanvasParams.getWidth()/2,SimulationCanvasParams.getHeight()/2,SimulationCanvasParams.getWidth()/2,SimulationCanvasParams.getHeight()/2),(byte)8);
 
+    //Function used to generate the balls from scratch and assign the start positions to them.
+
     public void generateBalls(){
-        for(int c = 0; c< SimulationValues.getBallCount(); c++){
-            this.balls.add(new InfectableBall());
-        }
-        int c=0;
-        for(InfectableBall el : balls){
-            System.out.println(c+" "+el.print());
-            System.out.println("))))");
+        //Space the balls evenly so that no balls overlap on initialization
+        //Calculate how many balls can fit horizontally on the canvas
+        int ballSpaceHorizontal = SimulationCanvasParams.getWidth()/(InfectableBallsParams.ballradius*2);
+        int ballSpaceVertical = SimulationCanvasParams.getHeight()/(InfectableBallsParams.ballradius*2);//calc how many balls fit vertically
+        //Check if all balls can fit inside the canvas
+
+        System.out.println("Balls Can Fit: "+ballSpaceVertical);
+        if((ballSpaceHorizontal*ballSpaceVertical>SimulationValues.getBallCount())){
+            List <Point> possibleBallCoordinates = new ArrayList<>();//List containing all possible coordinates for a ball while the Canvas is evenly divided
+
+            //Fill the list with all the possible coordinates
+           for(double y = InfectableBallsParams.ballradius; y<SimulationCanvasParams.getHeight()-InfectableBallsParams.ballradius;y=y+InfectableBallsParams.ballradius*2 ){
+                for(double x = InfectableBallsParams.ballradius; x<SimulationCanvasParams.getWidth()-InfectableBallsParams.ballradius;x=x+InfectableBallsParams.ballradius*2){
+                    possibleBallCoordinates.add(new Point(x,y));
+                }
+            }
+
+            //Place the balls randomly on the grid without overlapping
+            for(int cnt =0;cnt<SimulationValues.getBallCount();cnt++){
+                Random rand = new Random();
+                int randomIndex = rand.nextInt(possibleBallCoordinates.size());
+                this.balls.add(new InfectableBall(possibleBallCoordinates.get(randomIndex)));
+                possibleBallCoordinates.remove(randomIndex);
+            }
+            System.out.println("Balls are:" +this.balls.size()+"\nshould be: "+SimulationValues.getBallCount());
+
+        }else{//balls do not fit!
+            System.out.println("ERROR!Balls cannot fit inside the canvas! ERROR");
         }
     }
     //function used to handle a single timestep
