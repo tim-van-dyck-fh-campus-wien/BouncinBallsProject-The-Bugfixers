@@ -8,39 +8,44 @@
 
 
 <?import javafx.scene.canvas.Canvas?>
+<?import javafx.scene.text.Text?>
+<?import java.net.URL?>
+<?import javafx.scene.text.Font?>
 <BorderPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml" fx:id="borderPane" fx:controller="at.ac.fhcampuswien.bouncingballs.controllers.homepage">
+            xmlns:fx="http://javafx.com/fxml" fx:controller="at.ac.fhcampuswien.bouncingballs.controllers.homepage" styleClass="homepage">
 
     <top>
         <GridPane fx:id="title" alignment="TOP_CENTER" >
             <VBox>
                 <Label text=""></Label>
-                <Label text="The Bugfixers"></Label>
-                <Label text="Pandemic"></Label>
-                <Label text=""></Label>
-                <Label text=""></Label>
+                <Label text=""></Label> <Label text=""></Label>
+                <Label fx:id="LegalLabel"  text= "The Bugfixers Pandemic" GridPane.halignment="RIGHT" GridPane.rowIndex="16">
+                    <font>
+                        <Font name="System Bold" size="40.0" />
+                    </font>
+                </Label>
             </VBox>
-
         </GridPane>
     </top>
 <center>
     <GridPane fx:id="data" alignment="BASELINE_CENTER">
-        <VBox>
+        <VBox alignment="CENTER">
+            <Label text=""></Label>
+            <Label text=""></Label>
             <Label text="Population Size: "></Label>
+            <TextField fx:id="ptext" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
             <Label text="Infectiousness: "></Label>
+            <TextField fx:id="itext" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+            <Label text=""></Label>
+            <Button fx:id="button" onAction="#manageButton" prefWidth="200.0" prefHeight="100"
+                    text="START" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+            <Text fx:id="actiontarget"
+                  GridPane.columnIndex="1" GridPane.rowIndex="6"/>
         </VBox>
+
     </GridPane>
 </center>
-
-    <bottom>
-        <VBox>
-            <Button fx:id="button" onAction="#manageButton" prefWidth="150.0" prefHeight="80"
-                text="START" GridPane.columnIndex="0" GridPane.rowIndex="0" />
-        </VBox>
-
-    </bottom>
-
-
-
+    <stylesheets>
+        <URL value="@style.css" />
+    </stylesheets>
 </BorderPane>
-
