@@ -1,7 +1,7 @@
 package at.ac.fhcampuswien.bouncingballs.params;
 
 public class SimulationValues {
-    private static int ballCount=2000;
+    private static int ballCount=100;
 
     public static int getBallCount() {
         return ballCount;

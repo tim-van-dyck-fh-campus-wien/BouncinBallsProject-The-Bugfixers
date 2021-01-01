@@ -6,6 +6,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -20,11 +21,15 @@ import java.util.Scanner;
 public class homepage {
 
     @FXML private Text actiontarget;
+
+    @FXML
+    private TextField ptext;
     private ResourceBundle resources;
 
     @FXML protected void manageButton(ActionEvent event) {
 
         try {
+            System.out.println(ptext.getText());
             Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("main.fxml"), resources);
             Stage stage = new Stage();
             stage.setTitle("Bouncing-Balls");
