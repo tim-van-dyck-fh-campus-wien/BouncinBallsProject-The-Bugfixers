@@ -2,12 +2,14 @@ package at.ac.fhcampuswien.bouncingballs.balls;
 
 import at.ac.fhcampuswien.bouncingballs.params.InfectableBallsParams;
 import at.ac.fhcampuswien.bouncingballs.params.SimulationCanvasParams;
+import at.ac.fhcampuswien.bouncingballs.params.SimulationValues;
 import at.ac.fhcampuswien.bouncingballs.shapes.Point;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
 import java.awt.geom.Point2D;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 public class InfectableBall {
 
@@ -22,6 +24,8 @@ public class InfectableBall {
     private String id;
     //Counts how many Infectable balls have been generated, needed for the corresponding id identifying the Object
     private static int instanceCount=0;
+    //Time where the ball was infected
+    private long startOfInfection;
 
 
     public Point getVelocityVector() {
@@ -42,7 +46,9 @@ public class InfectableBall {
 
     public InfectableBall(Point coordinates){
         if(instanceCount==0) {
-            this.infectionStatus = InfectionStatus.INFECTED;
+
+            //this.infectionStatus = InfectionStatus.INFECTED;
+            this.infectBall();
         }
         this.coordinates=coordinates;
         this.genRandomVelocitys();
@@ -51,7 +57,8 @@ public class InfectableBall {
     }
     public InfectableBall() {
         if(instanceCount==0) {
-            this.infectionStatus = InfectionStatus.INFECTED;
+           // this.infectionStatus = InfectionStatus.INFECTED;
+            this.infectBall();
         }
             this.genRandomCoordinatesVelocity();
             this.generateIdOfObject();
@@ -115,6 +122,8 @@ public class InfectableBall {
             gc.setFill(Color.BLUE);
         }else if(infectionStatus== InfectionStatus.INFECTED){
             gc.setFill(Color.RED);
+        }else if(infectionStatus==InfectionStatus.REMOVED){
+            gc.setFill(Color.GRAY);
         }
         //fillOval uses the top left corner, and the last two parameters describe the diameter of the oval, thus the radius is multiplied by 2
         gc.fillOval(coordinates.x-InfectableBallsParams.ballradius,coordinates.y-InfectableBallsParams.ballradius,InfectableBallsParams.ballradius*2,InfectableBallsParams.ballradius*2);
@@ -145,6 +154,24 @@ public class InfectableBall {
            this.velocityVector.y = -this.velocityVector.y;
        }
 
+    }
+    public void infectBall(){
+        if(this.infectionStatus==InfectionStatus.SUSCEPTIBLE){
+            this.infectionStatus=InfectionStatus.INFECTED;
+            this.startOfInfection=System.nanoTime();
+        }
+
+    }
+    public void refreshInfectionStatus(){
+        if(this.infectionStatus==InfectionStatus.INFECTED){
+            long curNanoTime = System.nanoTime();
+            long delta = curNanoTime-this.startOfInfection;
+            double deltaSeconds = (double)delta*Math.pow(10,-9);
+            //System.out.println(deltaSeconds);
+            if(deltaSeconds> SimulationValues.getTimeToRecover()){
+                this.infectionStatus=InfectionStatus.REMOVED;
+            }
+        }
     }
 
 

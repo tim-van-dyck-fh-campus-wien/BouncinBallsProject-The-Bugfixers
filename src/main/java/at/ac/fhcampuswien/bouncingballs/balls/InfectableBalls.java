@@ -79,6 +79,7 @@ public class InfectableBalls {
     public void moveAllBalls(double time){
         for(InfectableBall el:balls){
             el.move(time);
+            el.refreshInfectionStatus();
         }
     }
     //removes all points from the quadtree
@@ -112,7 +113,6 @@ public class InfectableBalls {
 
           //Suche nur nach Bällen welche in der Nähe des Balls sind, falls der derzeitige Ball infiziert ist
             //Denn nur dann kann der Ball einen anderen Ball infizieren
-           if(ball.infectionStatus== InfectableBall.InfectionStatus.INFECTED) {
                for (Point point : tree.query(infectionCircle)) {
                   //Nur jener ball soll infiziert werden, welcher noch nicht infiziert ist
                    if (point.id != ball.getIdOfInstance()) {
@@ -120,9 +120,15 @@ public class InfectableBalls {
                        //Dies basiert auf der im Point abgespeicherten ID des Balls welche bei der Instanzierung
                        //vergeben wird
                        List<InfectableBall> res = balls.stream().filter(v -> (v.getIdOfInstance() == point.id)).collect(Collectors.toList());
-                          for (InfectableBall el : res) {
+                       for (InfectableBall el : res) {
                               //Infiziere jenen ball welcher im Infektionsradius des ürsprünglichen infizierten Balls ist
-                               el.infectionStatus = InfectableBall.InfectionStatus.INFECTED;
+                              if(ball.infectionStatus==InfectableBall.InfectionStatus.INFECTED){
+                                  //el.infectionStatus = InfectableBall.InfectionStatus.INFECTED;
+                                  el.infectBall();
+                              }else if(el.infectionStatus==InfectableBall.InfectionStatus.INFECTED){
+                                  //ball.infectionStatus= InfectableBall.InfectionStatus.INFECTED;
+                                  ball.infectBall();
+                              }
                               // System.out.println(el.print());
                               Point firstVelocityVector = ball.getVelocityVector();
                               Point secondVelocityVector = el.getVelocityVector();
@@ -145,7 +151,7 @@ public class InfectableBalls {
                    }
                    //   System.out.println(point.id);
                }
-           }
+
             c++;
 
         }

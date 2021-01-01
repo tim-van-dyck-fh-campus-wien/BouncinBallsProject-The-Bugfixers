@@ -26,6 +26,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.concurrent.TimeUnit;
 
 public class MainController implements Initializable  {
     @FXML
@@ -82,12 +83,14 @@ public class MainController implements Initializable  {
         this.simulationTimer();
     }
     int x=0;
-
+    long prevTime=System.nanoTime();
     public void simulationTimer(){
         final long startNanoTime = System.nanoTime();
         new AnimationTimer(){
             @Override
             public void handle(long currentNanoTime) {
+
+                long curTimeMS = TimeUnit.NANOSECONDS.toMillis(currentNanoTime-prevTime)/10;
 
                 //Clear canvas, set BackgroundColor
                 simulationGC.clearRect(0,0,1000,1000);
@@ -95,7 +98,7 @@ public class MainController implements Initializable  {
                 simulationGC.fillRect(0,0,1000,1000);
 
                 //handles everything sorrounding the Infectable balls
-                simulationGC = balls.drawAndHandleTimestep(simulationGC,currentNanoTime);
+                simulationGC = balls.drawAndHandleTimestep(simulationGC,curTimeMS);
 
 
                 //Quadtree Test
@@ -125,7 +128,7 @@ public class MainController implements Initializable  {
                 susceptibleCount.setText(Integer.toString(InfectionStats.getSusceptibleBalls()));
                 removedCount.setText(Integer.toString(InfectionStats.getRemovedBalls()));
                 infectionrate.setText(Integer.toString(InfectionStats.getInfectionRate()));
-
+                prevTime=currentNanoTime;
 
             }
         }.start();
