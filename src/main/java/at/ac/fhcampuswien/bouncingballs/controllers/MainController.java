@@ -215,11 +215,13 @@ public class MainController implements Initializable {
     private void startAnimationTimer(){
         if(this.animationTimer != null){
             this.animationTimer.start();
+            this.balls.simulationResumed();
         }
     }
 
     private void stopAnimationTimer(){
         if(this.animationTimer != null){
+            this.balls.simulationPaused();
             this.animationTimer.stop();
         }
     }

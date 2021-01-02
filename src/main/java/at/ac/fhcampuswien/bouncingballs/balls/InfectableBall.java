@@ -18,6 +18,7 @@ public class InfectableBall {
     //Counts how many Infectable balls have been generated, needed for the corresponding id identifying the Object
     //Time where the ball was infected
     private long startOfInfection;
+    private long timeElapsedSinceInfection;
 
     public Point getVelocityVector() {
         return velocityVector;
@@ -136,6 +137,21 @@ public class InfectableBall {
             this.infectionStatus = InfectableBalls.InfectionStatus.INFECTED;
             this.startOfInfection = System.nanoTime();
         }
+    }
+    //Save relevant Information when simulation is paused
+    public void simulationPaused(){
+        if (this.infectionStatus == InfectableBalls.InfectionStatus.INFECTED) {
+            //Save how long the ball has been infected when the simulation is paused.
+            long curNanoTime = System.nanoTime();
+            this.timeElapsedSinceInfection = curNanoTime - this.startOfInfection;
+        }
+    }
+    public void simulationResumed(){
+        //
+        if(this.infectionStatus==InfectableBalls.InfectionStatus.INFECTED){
+            this.startOfInfection=System.nanoTime()-this.timeElapsedSinceInfection;
+        }
+
     }
 
     public void refreshInfectionStatus() {

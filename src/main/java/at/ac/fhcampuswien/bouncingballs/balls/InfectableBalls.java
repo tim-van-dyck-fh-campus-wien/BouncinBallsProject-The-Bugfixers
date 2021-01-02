@@ -183,6 +183,16 @@ public class InfectableBalls {
         }
         return gc;
     }
+    public void simulationPaused(){
+        for(InfectableBall el : balls){
+            el.simulationPaused();
+        }
+    }
+    public void simulationResumed(){
+        for(InfectableBall el : balls){
+            el.simulationResumed();
+        }
+    }
 
     public static Point calculateVectorBetweenTwoPointsAndStretch(Point a, Point b, double velocity) {
         Point vector = Point.calculateVectorBetweenTwoPoints(a, b);
