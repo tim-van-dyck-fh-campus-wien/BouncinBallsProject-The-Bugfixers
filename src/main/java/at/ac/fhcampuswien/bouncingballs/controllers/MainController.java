@@ -1,34 +1,40 @@
 package at.ac.fhcampuswien.bouncingballs.controllers;
 
-import at.ac.fhcampuswien.bouncingballs.balls.InfectableBall;
 import at.ac.fhcampuswien.bouncingballs.balls.InfectableBalls;
 import at.ac.fhcampuswien.bouncingballs.balls.InfectionStats;
-import at.ac.fhcampuswien.bouncingballs.balls.QuadTree;
 import at.ac.fhcampuswien.bouncingballs.params.GraphCanvasParams;
 import at.ac.fhcampuswien.bouncingballs.params.SimulationCanvasParams;
 import at.ac.fhcampuswien.bouncingballs.params.SimulationValues;
-import at.ac.fhcampuswien.bouncingballs.shapes.Circle;
-import at.ac.fhcampuswien.bouncingballs.shapes.Point;
-import at.ac.fhcampuswien.bouncingballs.shapes.Rectangle;
 import javafx.animation.AnimationTimer;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.VPos;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.ResourceBundle;
 import java.util.concurrent.TimeUnit;
 
-public class MainController implements Initializable  {
+public class MainController implements Initializable {
+
+    AnimationTimer animationTimer;
+    long prevTime;
+    long prevInfections = 0;
+    double speedModifier = 0.1;
+
     @FXML
     BorderPane borderPane;
     @FXML
@@ -59,46 +65,108 @@ public class MainController implements Initializable  {
     @FXML
     private Label infectionrate;
 
+    @FXML
+    private Button playButton;
 
-    //List<InfectableBall> balls = new ArrayList<>();
+    @FXML
+    private Button pauseButton;
+
+    @FXML
+    private Button newSim;
+
+    @FXML
+    private Button resetButton;
+
+    @FXML
+    private Button forwardButton;
+
+    @FXML
+    private Button rewindButton;
+
     InfectableBalls balls = new InfectableBalls();
+
+    private int population;
+    private int infected;
+
+    MainController(int population, int infected){
+        this.population = population;
+        this.infected = infected;
+    }
+
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        this.simulation = new Canvas(SimulationCanvasParams.getWidth(),SimulationCanvasParams.getHeight());
-        this.simulationGC=this.simulation.getGraphicsContext2D();
-        this.graph = new Canvas(GraphCanvasParams.getWidth(),GraphCanvasParams.getHeight());
+        this.resetPrevTime();
+
+        this.simulation = new Canvas(SimulationCanvasParams.getWidth(), SimulationCanvasParams.getHeight());
+        this.simulationGC = this.simulation.getGraphicsContext2D();
+        this.graph = new Canvas(GraphCanvasParams.getWidth(), GraphCanvasParams.getHeight());
         this.graphContainer.getChildren().add(this.graph);
         GridPane.setValignment(graphContainer, VPos.BOTTOM);
-        this.graphGC=this.graph.getGraphicsContext2D();
+        this.graphGC = this.graph.getGraphicsContext2D();
         this.simulationGC.setFill(Color.BLACK);
-        this.graphGC.setFill(Color.RED);
-        this.borderPane.setRight(this.simulation);
+        this.graphGC.setFill(Color.TRANSPARENT);
+        this.borderPane.setCenter(this.simulation);
 
+        this.graphGC.fillRect(0, 0, SimulationCanvasParams.getWidth(), SimulationCanvasParams.getHeight());
 
-        //this.simulationGC.fillRect(0,0,10000,10000);
-        this.graphGC.fillRect(0,0,SimulationCanvasParams.getWidth(),SimulationCanvasParams.getHeight());
-        //this.initializeBalls();
-        this.balls.generateBalls();
+        this.balls.generateBalls(population,infected);
         this.simulationTimer();
+        this.startAnimationTimer();
+
+        forwardButton.setOnMouseClicked(event -> {
+            speedModifier-=0.1;
+        });
+
+        rewindButton.setOnMouseClicked(event -> {
+            speedModifier+=0.1;
+        });
+
+        newSim.setOnMouseClicked(event -> {
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("homepage.fxml"));
+                Parent root = loader.load();
+                Stage stage = new Stage();
+                stage.setTitle("Bouncing-Balls");
+                stage.setScene(new Scene(root, 1280, 720));
+                stage.show();
+                ((Node)(event.getSource())).getScene().getWindow().hide();
+            }
+            catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+
+        resetButton.setOnMouseClicked(event -> {
+            this.balls.removeAllBalls();
+            this.balls.generateBalls(population,infected);
+            System.out.println(prevTime);
+        });
+
+        pauseButton.setOnMouseClicked(event -> {
+            this.stopAnimationTimer();
+        });
+        playButton.setOnMouseClicked(event -> {
+            this.startAnimationTimer();
+        });
     }
-    int x=0;
-    long prevTime=System.nanoTime();
-    public void simulationTimer(){
-        final long startNanoTime = System.nanoTime();
-        new AnimationTimer(){
+
+
+
+    public void simulationTimer() {
+        animationTimer = new AnimationTimer() {
             @Override
             public void handle(long currentNanoTime) {
-
-                long curTimeMS = TimeUnit.NANOSECONDS.toMillis(currentNanoTime-prevTime)/10;
-
+                long curTimeMilli = TimeUnit.NANOSECONDS.toMillis(currentNanoTime);
+                //double curTimeMS = TimeUnit.NANOSECONDS.toMillis(currentNanoTime - prevTime) / 100;
+                //System.out.println(curTimeMS);
                 //Clear canvas, set BackgroundColor
-                simulationGC.clearRect(0,0,1000,1000);
+                simulationGC.clearRect(0, 0, 1000, 1000);
                 simulationGC.setFill(Color.BLACK);
-                simulationGC.fillRect(0,0,1000,1000);
+                simulationGC.fillRect(0, 0, 1000, 1000);
 
                 //handles everything sorrounding the Infectable balls
-                simulationGC = balls.drawAndHandleTimestep(simulationGC,curTimeMS);
+                simulationGC = balls.drawAndHandleTimestep(simulationGC, speedModifier);
 
 
                 //Quadtree Test
@@ -120,18 +188,40 @@ public class MainController implements Initializable  {
                     double radius = 5;
                     simulationGC.fillOval(p.x-radius,p.y-radius,radius*2,radius*2);
                 }*/
-               // InfectionStats.infektionsgeschehen();
+                // InfectionStats.infektionsgeschehen();
 
-               // InfectionStats.printCurStats();
-                populationCount.setText(Integer.toString(SimulationValues.getBallCount()));
-                infectedCount.setText(Integer.toString(InfectionStats.getInfectedBalls()));
-                susceptibleCount.setText(Integer.toString(InfectionStats.getSusceptibleBalls()));
-                removedCount.setText(Integer.toString(InfectionStats.getRemovedBalls()));
-                infectionrate.setText(Integer.toString(InfectionStats.getInfectionRate()));
-                prevTime=currentNanoTime;
+                // InfectionStats.printCurStats();
 
+                long infected = balls.getCountByState(InfectableBalls.InfectionStatus.INFECTED);
+                populationCount.setText(Integer.toString(population));
+                infectedCount.setText(Long.toString(infected));
+                susceptibleCount.setText(Long.toString(balls.getCountByState(InfectableBalls.InfectionStatus.SUSCEPTIBLE)));
+                removedCount.setText(Long.toString(balls.getCountByState(InfectableBalls.InfectionStatus.REMOVED)));
+
+                long timeDifference = curTimeMilli - prevTime;
+                long infectionDifference = infected - prevInfections;
+                long infectionRate = infectionDifference/timeDifference;
+
+                infectionrate.setText(Long.toString(infectionRate));
+                prevTime = curTimeMilli;
             }
-        }.start();
+        };
+    }
+
+    private void resetPrevTime(){
+        this.prevTime = System.nanoTime();
+    }
+
+    private void startAnimationTimer(){
+        if(this.animationTimer != null){
+            this.animationTimer.start();
+        }
+    }
+
+    private void stopAnimationTimer(){
+        if(this.animationTimer != null){
+            this.animationTimer.stop();
+        }
     }
 
 }

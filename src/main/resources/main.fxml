@@ -1,39 +1,41 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-
-
-<?import javafx.scene.canvas.Canvas?>
-<?import javafx.scene.text.Font?>
 <?import java.net.URL?>
-<BorderPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml" fx:id="borderPane" fx:controller="at.ac.fhcampuswien.bouncingballs.controllers.MainController" styleClass="label-count">
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ButtonBar?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Slider?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane fx:id="borderPane" prefHeight="494.0" prefWidth="998.0" styleClass="label-count" xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1">
 
     <left>
         <GridPane fx:id="containerleft" gridLinesVisible="true">
             <VBox GridPane.rowIndex="0" GridPane.vgrow="ALWAYS">
                 <HBox GridPane.hgrow="ALWAYS">
-                    <Label text="Population: " styleClass="label-count" />
+                    <Label styleClass="label-count" text="Population: " />
                     <Label fx:id="populationCount" styleClass="label-count" />
                 </HBox>
                 <HBox GridPane.hgrow="ALWAYS">
-                    <Label text="Infected: " styleClass="label-count" />
-                    <Label fx:id="infectedCount" styleClass="label-count"/>
+                    <Label styleClass="label-count" text="Infected: " />
+                    <Label fx:id="infectedCount" styleClass="label-count" />
                 </HBox>
                 <HBox GridPane.hgrow="ALWAYS">
-                    <Label text="Susceptible: " styleClass="label-count" />
+                    <Label styleClass="label-count" text="Susceptible: " />
                     <Label fx:id="susceptibleCount" styleClass="label-count" />
                 </HBox>
                 <HBox GridPane.hgrow="ALWAYS">
-                    <Label text="Removed: " styleClass="label-count" />
+                    <Label styleClass="label-count" text="Removed: " />
                     <Label fx:id="removedCount" styleClass="label-count" />
                 </HBox>
                 <HBox GridPane.hgrow="ALWAYS">
-                    <Label text="Infectionrate: " styleClass="label-count" />
+                    <Label styleClass="label-count" text="Infectionrate: " />
                     <Label fx:id="infectionrate" styleClass="label-count" />
                 </HBox>
             </VBox>
@@ -41,17 +43,62 @@
 
 
             </VBox>
+         <columnConstraints>
+            <ColumnConstraints />
+         </columnConstraints>
+         <rowConstraints>
+            <RowConstraints />
+            <RowConstraints />
+         </rowConstraints>
 
         </GridPane>
     </left>
-    <bottom>
-        <HBox prefHeight="100">
-            <Label text="test"></Label>
-            <Label text="test"></Label>
-        </HBox>
-
-    </bottom>
     <stylesheets>
         <URL value="@style.css" />
     </stylesheets>
+   <bottom>
+      <VBox prefHeight="155.0" prefWidth="998.0" BorderPane.alignment="CENTER">
+         <children>
+            <ButtonBar prefHeight="55.0" prefWidth="998.0">
+               <buttons>
+                <Button fx:id="newSim" mnemonicParsing="false" text="New simulation">
+                     <font>
+                        <Font size="12.0" />
+                     </font></Button>
+                  <Button fx:id="resetButton" mnemonicParsing="false" text="Reset">
+                     <font>
+                        <Font size="12.0" />
+                     </font></Button>
+                  <Button mnemonicParsing="false" text="Quarantäne">
+                     <font>
+                        <Font size="12.0" />
+                     </font></Button>
+                  <Button mnemonicParsing="false" text="Social Distancing">
+                     <font>
+                        <Font size="12.0" />
+                     </font></Button>
+                <Button fx:id="playButton" mnemonicParsing="false" text="Play">
+                     <font>
+                        <Font size="12.0" />
+                     </font></Button>
+                  <Button id="pauseButton" fx:id="pauseButton" mnemonicParsing="false" text="Pause">
+                     <font>
+                        <Font size="12.0" />
+                     </font></Button>
+                  <Button fx:id="forwardButton" mnemonicParsing="false" text="Fast Forward">
+                     <font>
+                        <Font size="12.0" />
+                     </font>
+                  </Button>
+                  <Button fx:id="rewindButton" mnemonicParsing="false" text="Slower">
+                     <font>
+                        <Font size="12.0" />
+                     </font>
+                  </Button>
+               </buttons>
+            </ButtonBar>
+            <Slider />
+         </children>
+      </VBox>
+   </bottom>
 </BorderPane>

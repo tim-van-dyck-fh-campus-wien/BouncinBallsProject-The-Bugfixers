@@ -24,13 +24,17 @@ public class homepage {
 
     @FXML
     private TextField ptext;
+
+    @FXML
+    private TextField itext;
+
     private ResourceBundle resources;
 
     @FXML protected void manageButton(ActionEvent event) {
-
         try {
-            System.out.println(ptext.getText());
-            Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("main.fxml"), resources);
+            FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("main.fxml"));
+            loader.setController(new MainController(Integer.parseInt(ptext.getText()),Integer.parseInt(itext.getText())));
+            Parent root = loader.load();
             Stage stage = new Stage();
             stage.setTitle("Bouncing-Balls");
             stage.setScene(new Scene(root, 1280, 720));

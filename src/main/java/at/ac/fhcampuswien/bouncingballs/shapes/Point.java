@@ -4,21 +4,19 @@ public class Point {
 
     public double x;    //y Coordinate
     public double y;    //y Coordinate
-    public String id;   //id string needed to identify a given Point, must not be used! Only needed for the Quadtree
-    public Point(double x, double y,String id){
-        this.x=x;
-        this.y=y;
-        this.id=id;
-    }
-    public Point(Point p, String id){
+    public int id;   //id string needed to identify a given Point, must not be used! Only needed for the Quadtree
+
+    public Point(Point p, int id){
         this.x=p.x;
         this.y=p.y;
         this.id=id;
     }
+
     public Point(double x,double y){
         this.x=x;
         this.y=y;
     }
+
     public boolean Intersects(float r, float x, float y){
         double dx=Math.abs(this.x-x);
         double dy=Math.abs(this.y-y);
