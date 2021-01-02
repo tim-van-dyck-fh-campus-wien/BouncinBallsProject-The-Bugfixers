@@ -1,7 +1,7 @@
 package at.ac.fhcampuswien.bouncingballs.params;
 
 public class SimulationValues {
-    private static int ballCount=1000;
+    private static int ballCount=100;
     private static double timeToRecover=5;
 
     public static double getTimeToRecover() {
