@@ -25,16 +25,20 @@ public class InfectableBalls {
 
     List<InfectableBall> balls = new ArrayList<>();
     public QuadTree tree = new QuadTree(new Rectangle(SimulationCanvasParams.getWidth() / 2, SimulationCanvasParams.getHeight() / 2, SimulationCanvasParams.getWidth() / 2, SimulationCanvasParams.getHeight() / 2), (byte) 8);
-
-    //Function used to generate the balls from scratch and assign the start positions to them.
+    //CurrentTime in hundreths of a second
+    public double curTime=0;
+    //needed for correct collision handling!
+    public double previousTimeDifference=-1;
 
     public long getCountByState(InfectionStatus status){
         return this.balls.stream().filter(ball -> ball.infectionStatus == status).count();
     }
 
     public void removeAllBalls(){
+        this.curTime=0;
         this.balls.clear();
     }
+    //Function used to generate the balls from scratch and assign the start positions to them.
 
     public void generateBalls(int population, int initialInfected) {
         Random rand = new Random();
@@ -61,7 +65,7 @@ public class InfectableBalls {
             //Place the balls randomly on the grid without overlapping
             for (int cnt = 0; cnt < population; cnt++) {
                 boolean infected = false;
-                if(infectedAddedCount < initialInfected && rand.nextBoolean()){
+                if(infectedAddedCount < initialInfected){
                     infected = true;
                     infectedAddedCount++;
                 }
@@ -79,11 +83,14 @@ public class InfectableBalls {
     //function used to handle a single timestep
     //draws the balls, moves them, handles collisions etc.
     public GraphicsContext drawAndHandleTimestep(GraphicsContext gc, double time) {
+        this.curTime= this.curTime + (time/100);
+        System.out.println("curtime"+this.curTime);
         this.resetQuadtree();
         this.fillQuadtree();
         //The collision Handling has to happen prior to the move operation of the balls!
-        gc = this.handleCollision(gc);
+        gc = this.handleCollision(gc,time);
         this.moveAllBalls(time);
+        this.previousTimeDifference=time;
         return draw(gc);
 
     }
@@ -106,7 +113,7 @@ public class InfectableBalls {
     public void moveAllBalls(double time) {
         for (InfectableBall el : balls) {
             el.move(time);
-            el.refreshInfectionStatus();
+            el.refreshInfectionStatus(this.curTime);
         }
     }
 
@@ -116,7 +123,7 @@ public class InfectableBalls {
     }
 
     //Testmethode zur ersten Simulation des Ansteckungsmechanismus
-    private GraphicsContext handleCollision(GraphicsContext gc) {
+    private GraphicsContext handleCollision(GraphicsContext gc,double currentTimeDifference) {
         //List <InfectableBall> collisionHandled = new ArrayList<>();
         //Dummy Liste bestehend aus allen Bällen,
         List<InfectableBall> toHandle = new ArrayList<>(balls);
@@ -150,10 +157,10 @@ public class InfectableBalls {
                         //Infiziere jenen ball welcher im Infektionsradius des ürsprünglichen infizierten Balls ist
                         if (ball.infectionStatus == InfectionStatus.INFECTED) {
                             //el.infectionStatus = InfectableBall.InfectionStatus.INFECTED;
-                            el.infectBall();
+                            el.infectBall(this.curTime);
                         } else if (el.infectionStatus == InfectionStatus.INFECTED) {
                             //ball.infectionStatus= InfectableBall.InfectionStatus.INFECTED;
-                            ball.infectBall();
+                            ball.infectBall(this.curTime);
                         }
                         // System.out.println(el.print());
                         Point firstVelocityVector = ball.getVelocityVector();
@@ -168,8 +175,18 @@ public class InfectableBalls {
                         newSecondVelocityVector.y = firstVelocityVector.y;
 
 
+
                         ball.setVelocityVector(newFirstVelocityVector);
                         el.setVelocityVector(newSecondVelocityVector);
+
+                        //In order to guarantee that the balls dont collide in the next frame,
+                        //we have to check wheter the currentTimestep is smaller than the previous one
+                        //if it is, we have to move the colliding balls by the difference of those two,
+                        //so that the balls definetly don't collide in the next frame!
+                        if(currentTimeDifference<previousTimeDifference){
+                            ball.move(previousTimeDifference-currentTimeDifference);
+                            el.move(previousTimeDifference-currentTimeDifference);
+                        }
                         toHandle.remove(el);
 
                     }
@@ -183,16 +200,7 @@ public class InfectableBalls {
         }
         return gc;
     }
-    public void simulationPaused(){
-        for(InfectableBall el : balls){
-            el.simulationPaused();
-        }
-    }
-    public void simulationResumed(){
-        for(InfectableBall el : balls){
-            el.simulationResumed();
-        }
-    }
+
 
     public static Point calculateVectorBetweenTwoPointsAndStretch(Point a, Point b, double velocity) {
         Point vector = Point.calculateVectorBetweenTwoPoints(a, b);

@@ -1,4 +1,5 @@
 package at.ac.fhcampuswien.bouncingballs.controllers;
+import at.ac.fhcampuswien.bouncingballs.params.SimulationValues;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -33,7 +34,10 @@ public class homepage {
     @FXML protected void manageButton(ActionEvent event) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("main.fxml"));
-            loader.setController(new MainController(Integer.parseInt(ptext.getText()),Integer.parseInt(itext.getText())));
+
+            SimulationValues.setBallCount(Integer.parseInt(ptext.getText()));
+            SimulationValues.setInitalInfections(Integer.parseInt(itext.getText()));
+            loader.setController(new MainController());
             Parent root = loader.load();
             Stage stage = new Stage();
             stage.setTitle("Bouncing-Balls");

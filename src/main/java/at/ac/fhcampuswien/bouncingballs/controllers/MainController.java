@@ -33,7 +33,7 @@ public class MainController implements Initializable {
     AnimationTimer animationTimer;
     long prevTime;
     long prevInfections = 0;
-    double speedModifier = 0.1;
+    double speedModifier = 1;
 
     @FXML
     BorderPane borderPane;
@@ -85,13 +85,9 @@ public class MainController implements Initializable {
 
     InfectableBalls balls = new InfectableBalls();
 
-    private int population;
-    private int infected;
 
-    MainController(int population, int infected){
-        this.population = population;
-        this.infected = infected;
-    }
+
+
 
 
     @Override
@@ -110,20 +106,23 @@ public class MainController implements Initializable {
 
         this.graphGC.fillRect(0, 0, SimulationCanvasParams.getWidth(), SimulationCanvasParams.getHeight());
 
-        this.balls.generateBalls(population,infected);
+        this.balls.generateBalls(SimulationValues.getBallCount(),SimulationValues.getInitalInfections());
         this.simulationTimer();
         this.startAnimationTimer();
 
         forwardButton.setOnMouseClicked(event -> {
-            speedModifier-=0.1;
+            speedModifier+=0.25;
         });
 
         rewindButton.setOnMouseClicked(event -> {
-            speedModifier+=0.1;
+            if(speedModifier>0.1){
+                speedModifier-=0.25;
+            }
         });
 
         newSim.setOnMouseClicked(event -> {
             try {
+                this.animationTimer.stop();
                 FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("homepage.fxml"));
                 Parent root = loader.load();
                 Stage stage = new Stage();
@@ -139,7 +138,7 @@ public class MainController implements Initializable {
 
         resetButton.setOnMouseClicked(event -> {
             this.balls.removeAllBalls();
-            this.balls.generateBalls(population,infected);
+            this.balls.generateBalls(SimulationValues.getBallCount(),SimulationValues.getInitalInfections());
             System.out.println(prevTime);
         });
 
@@ -158,15 +157,21 @@ public class MainController implements Initializable {
             @Override
             public void handle(long currentNanoTime) {
                 long curTimeMilli = TimeUnit.NANOSECONDS.toMillis(currentNanoTime);
-                //double curTimeMS = TimeUnit.NANOSECONDS.toMillis(currentNanoTime - prevTime) / 100;
+                double curTimeMS = TimeUnit.NANOSECONDS.toMillis(currentNanoTime - prevTime) ;
+                double prevNanoTime = prevTime;
+                prevTime = TimeUnit.NANOSECONDS.toMillis(prevTime);
                 //System.out.println(curTimeMS);
                 //Clear canvas, set BackgroundColor
                 simulationGC.clearRect(0, 0, 1000, 1000);
                 simulationGC.setFill(Color.BLACK);
                 simulationGC.fillRect(0, 0, 1000, 1000);
+                //Zeitunterschied zwischen diesem und vorherigen frame in 100stel sekunden
+                double deltaTimeSeconds=(double)(currentNanoTime-prevNanoTime)/10000000;
+                System.out.println(deltaTimeSeconds);
 
                 //handles everything sorrounding the Infectable balls
-                simulationGC = balls.drawAndHandleTimestep(simulationGC, speedModifier);
+                //System.out.println(deltaTimeSeconds);
+                simulationGC = balls.drawAndHandleTimestep(simulationGC, deltaTimeSeconds*speedModifier);
 
 
                 //Quadtree Test
@@ -193,17 +198,19 @@ public class MainController implements Initializable {
                 // InfectionStats.printCurStats();
 
                 long infected = balls.getCountByState(InfectableBalls.InfectionStatus.INFECTED);
-                populationCount.setText(Integer.toString(population));
+                populationCount.setText(Integer.toString(SimulationValues.getBallCount()));
                 infectedCount.setText(Long.toString(infected));
                 susceptibleCount.setText(Long.toString(balls.getCountByState(InfectableBalls.InfectionStatus.SUSCEPTIBLE)));
                 removedCount.setText(Long.toString(balls.getCountByState(InfectableBalls.InfectionStatus.REMOVED)));
-
                 long timeDifference = curTimeMilli - prevTime;
                 long infectionDifference = infected - prevInfections;
-                long infectionRate = infectionDifference/timeDifference;
+                long infectionRate=0;
+                if (timeDifference != 0) {
+                     infectionRate = infectionDifference/timeDifference;
+                }
 
                 infectionrate.setText(Long.toString(infectionRate));
-                prevTime = curTimeMilli;
+                prevTime = currentNanoTime;
             }
         };
     }
@@ -215,13 +222,13 @@ public class MainController implements Initializable {
     private void startAnimationTimer(){
         if(this.animationTimer != null){
             this.animationTimer.start();
-            this.balls.simulationResumed();
+           // this.balls.simulationResumed();
         }
     }
 
     private void stopAnimationTimer(){
         if(this.animationTimer != null){
-            this.balls.simulationPaused();
+           // this.balls.simulationPaused();
             this.animationTimer.stop();
         }
     }

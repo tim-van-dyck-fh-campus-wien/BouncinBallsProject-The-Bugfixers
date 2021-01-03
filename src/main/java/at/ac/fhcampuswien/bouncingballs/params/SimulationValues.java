@@ -3,6 +3,15 @@ package at.ac.fhcampuswien.bouncingballs.params;
 public class SimulationValues {
     private static int ballCount=900;
     private static double timeToRecover=5;
+    private static int initalInfections=1;
+
+    public static int getInitalInfections() {
+        return initalInfections;
+    }
+
+    public static void setInitalInfections(int initalInfections) {
+        SimulationValues.initalInfections = initalInfections;
+    }
 
     public static double getTimeToRecover() {
         return timeToRecover;

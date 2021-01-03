@@ -17,8 +17,8 @@ public class InfectableBall {
     private int id;
     //Counts how many Infectable balls have been generated, needed for the corresponding id identifying the Object
     //Time where the ball was infected
-    private long startOfInfection;
-    private long timeElapsedSinceInfection;
+    private double startOfInfection;
+    private double timeElapsedSinceInfection;
 
     public Point getVelocityVector() {
         return velocityVector;
@@ -39,7 +39,8 @@ public class InfectableBall {
     public InfectableBall(Point coordinates, int identifier, boolean initInfected) {
         this.id = identifier;
         if (initInfected) {
-            this.infectBall();
+            this.infectBall(0);
+
         }
         this.coordinates = coordinates;
         this.genRandomVelocitys();
@@ -132,35 +133,22 @@ public class InfectableBall {
 
     }
 
-    public void infectBall() {
+    public void infectBall(double timeOfInfection) {
         if (this.infectionStatus == InfectableBalls.InfectionStatus.SUSCEPTIBLE) {
             this.infectionStatus = InfectableBalls.InfectionStatus.INFECTED;
-            this.startOfInfection = System.nanoTime();
+            this.startOfInfection = timeOfInfection;
         }
     }
     //Save relevant Information when simulation is paused
-    public void simulationPaused(){
-        if (this.infectionStatus == InfectableBalls.InfectionStatus.INFECTED) {
-            //Save how long the ball has been infected when the simulation is paused.
-            long curNanoTime = System.nanoTime();
-            this.timeElapsedSinceInfection = curNanoTime - this.startOfInfection;
-        }
-    }
-    public void simulationResumed(){
-        //
-        if(this.infectionStatus==InfectableBalls.InfectionStatus.INFECTED){
-            this.startOfInfection=System.nanoTime()-this.timeElapsedSinceInfection;
-        }
 
-    }
 
-    public void refreshInfectionStatus() {
+    public void refreshInfectionStatus(double currentTime) {
         if (this.infectionStatus == InfectableBalls.InfectionStatus.INFECTED) {
-            long curNanoTime = System.nanoTime();
-            long delta = curNanoTime - this.startOfInfection;
-            double deltaSeconds = (double) delta * Math.pow(10, -9);
+            double delta = currentTime - this.startOfInfection;
+            System.out.println("start of infection is"+startOfInfection);
+
             //System.out.println(deltaSeconds);
-            if (deltaSeconds > SimulationValues.getTimeToRecover()) {
+            if (delta > SimulationValues.getTimeToRecover()) {
                 this.infectionStatus = InfectableBalls.InfectionStatus.REMOVED;
             }
         }
