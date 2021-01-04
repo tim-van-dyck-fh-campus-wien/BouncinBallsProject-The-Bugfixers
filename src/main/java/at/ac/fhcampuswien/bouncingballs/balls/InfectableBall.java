@@ -65,7 +65,7 @@ public class InfectableBall {
         this.velocityVector.x = this.velocityVector.x * InfectableBallsParams.velocity;
         this.velocityVector.y = this.velocityVector.y * InfectableBallsParams.velocity;
         lengthOfVector = Math.sqrt(Math.pow(this.velocityVector.x, 2) + Math.pow(this.velocityVector.y, 2));
-        System.out.println("len" + lengthOfVector);
+       // System.out.println("len" + lengthOfVector);
     }
 
     public void genRandomCoordinatesVelocity() {
@@ -89,7 +89,7 @@ public class InfectableBall {
         this.velocityVector.x = this.velocityVector.x * InfectableBallsParams.velocity;
         this.velocityVector.y = this.velocityVector.y * InfectableBallsParams.velocity;
         lengthOfVector = Math.sqrt(Math.pow(this.velocityVector.x, 2) + Math.pow(this.velocityVector.y, 2));
-        System.out.println("len" + lengthOfVector);
+       // System.out.println("len" + lengthOfVector);
     }
 
     public GraphicsContext draw(GraphicsContext gc) {
@@ -145,7 +145,7 @@ public class InfectableBall {
     public void refreshInfectionStatus(double currentTime) {
         if (this.infectionStatus == InfectableBalls.InfectionStatus.INFECTED) {
             double delta = currentTime - this.startOfInfection;
-            System.out.println("start of infection is"+startOfInfection);
+           // System.out.println("start of infection is"+startOfInfection);
 
             //System.out.println(deltaSeconds);
             if (delta > SimulationValues.getTimeToRecover()) {

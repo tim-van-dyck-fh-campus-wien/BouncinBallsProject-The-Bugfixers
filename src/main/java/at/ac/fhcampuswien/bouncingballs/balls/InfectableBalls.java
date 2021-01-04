@@ -25,7 +25,7 @@ public class InfectableBalls {
 
     List<InfectableBall> balls = new ArrayList<>();
     public QuadTree tree = new QuadTree(new Rectangle(SimulationCanvasParams.getWidth() / 2, SimulationCanvasParams.getHeight() / 2, SimulationCanvasParams.getWidth() / 2, SimulationCanvasParams.getHeight() / 2), (byte) 8);
-    //CurrentTime in hundreths of a second
+    //CurrentTime in   second
     public double curTime=0;
     //needed for correct collision handling!
     public double previousTimeDifference=-1;
@@ -51,7 +51,7 @@ public class InfectableBalls {
         int ballSpaceVertical = SimulationCanvasParams.getHeight() / (InfectableBallsParams.ballradius * 2);//calc how many balls fit vertically
         //Check if all balls can fit inside the canvas
 
-        System.out.println("Balls Can Fit: " + ballSpaceVertical);
+      //  System.out.println("Balls Can Fit: " + ballSpaceVertical);
         if ((ballSpaceHorizontal * ballSpaceVertical > SimulationValues.getBallCount())) {
             List<Point> possibleBallCoordinates = new ArrayList<>();//List containing all possible coordinates for a ball while the Canvas is evenly divided
 
@@ -73,7 +73,7 @@ public class InfectableBalls {
                 this.balls.add(new InfectableBall(possibleBallCoordinates.get(randomIndex),cnt,infected));
                 possibleBallCoordinates.remove(randomIndex);
             }
-            System.out.println("Balls are:" + this.balls.size() + "\nshould be: " + SimulationValues.getBallCount());
+           // System.out.println("Balls are:" + this.balls.size() + "\nshould be: " + SimulationValues.getBallCount());
 
         } else {//balls do not fit!
             System.out.println("ERROR!Balls cannot fit inside the canvas! ERROR");
@@ -84,7 +84,7 @@ public class InfectableBalls {
     //draws the balls, moves them, handles collisions etc.
     public GraphicsContext drawAndHandleTimestep(GraphicsContext gc, double time) {
         this.curTime= this.curTime + (time/100);
-        System.out.println("curtime"+this.curTime);
+       // System.out.println("curtime"+this.curTime);
         this.resetQuadtree();
         this.fillQuadtree();
         //The collision Handling has to happen prior to the move operation of the balls!

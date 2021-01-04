@@ -1,5 +1,6 @@
 package at.ac.fhcampuswien.bouncingballs.controllers;
 
+import at.ac.fhcampuswien.bouncingballs.balls.GraphStats;
 import at.ac.fhcampuswien.bouncingballs.balls.InfectableBalls;
 import at.ac.fhcampuswien.bouncingballs.balls.InfectionStats;
 import at.ac.fhcampuswien.bouncingballs.params.GraphCanvasParams;
@@ -25,6 +26,8 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 import java.util.concurrent.TimeUnit;
 
@@ -85,7 +88,9 @@ public class MainController implements Initializable {
 
     InfectableBalls balls = new InfectableBalls();
 
-
+    //Liste welche statistik enthält
+    List<GraphStats> statistics = new ArrayList<>();
+    double lastStatisticsSaveTime=0;
 
 
 
@@ -139,7 +144,7 @@ public class MainController implements Initializable {
         resetButton.setOnMouseClicked(event -> {
             this.balls.removeAllBalls();
             this.balls.generateBalls(SimulationValues.getBallCount(),SimulationValues.getInitalInfections());
-            System.out.println(prevTime);
+            //System.out.println(prevTime);
         });
 
         pauseButton.setOnMouseClicked(event -> {
@@ -211,10 +216,47 @@ public class MainController implements Initializable {
 
                 infectionrate.setText(Long.toString(infectionRate));
                 prevTime = currentNanoTime;
+
+
+                System.out.println("curtime"+balls.curTime);
+
+                handleGraph();
+
+
+
             }
         };
     }
 
+    private void handleGraph() {
+
+        double percentInfected = this.balls.getCountByState(InfectableBalls.InfectionStatus.INFECTED) / (double) SimulationValues.getBallCount();
+        double percentSusceptible = this.balls.getCountByState(InfectableBalls.InfectionStatus.SUSCEPTIBLE) / (double) SimulationValues.getBallCount();
+        double percentRemoved = this.balls.getCountByState(InfectableBalls.InfectionStatus.REMOVED) / (double) SimulationValues.getBallCount();
+
+
+        if(balls.curTime-this.lastStatisticsSaveTime>0.1|| this.lastStatisticsSaveTime==0){
+            this.statistics.add(new GraphStats(percentInfected,percentSusceptible,percentRemoved));
+            this.lastStatisticsSaveTime= balls.curTime;
+        }
+
+        //DrawRemoved
+        this.graphGC.setFill(Color.GRAY);
+        double removedHeight = percentRemoved * GraphCanvasParams.getHeight();
+        double width = GraphCanvasParams.getWidth();
+        this.graphGC.fillRect(0, GraphCanvasParams.getHeight() - removedHeight, width, removedHeight);
+
+        //drawInfected
+        this.graphGC.setFill(Color.RED);
+        double infectedHeight = percentInfected * GraphCanvasParams.getHeight();
+        this.graphGC.fillRect(0, GraphCanvasParams.getHeight() - removedHeight - infectedHeight, width, infectedHeight);
+        System.out.println("PercentInfected" + this.balls.getCountByState(InfectableBalls.InfectionStatus.INFECTED));
+
+        //drawSusceptible
+        this.graphGC.setFill(Color.BLUE);
+        double susceptibleHeight = percentSusceptible * GraphCanvasParams.getHeight();
+        this.graphGC.fillRect(0, 0, width, susceptibleHeight);
+    }
     private void resetPrevTime(){
         this.prevTime = System.nanoTime();
     }
