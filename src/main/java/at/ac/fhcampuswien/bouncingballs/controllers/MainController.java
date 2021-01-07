@@ -2,7 +2,6 @@ package at.ac.fhcampuswien.bouncingballs.controllers;
 
 import at.ac.fhcampuswien.bouncingballs.balls.GraphStats;
 import at.ac.fhcampuswien.bouncingballs.balls.InfectableBalls;
-import at.ac.fhcampuswien.bouncingballs.balls.InfectionStats;
 import at.ac.fhcampuswien.bouncingballs.params.GraphCanvasParams;
 import at.ac.fhcampuswien.bouncingballs.params.SimulationCanvasParams;
 import at.ac.fhcampuswien.bouncingballs.params.SimulationValues;
@@ -26,17 +25,24 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.LinkedList;
 import java.util.ResourceBundle;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 public class MainController implements Initializable {
 
     AnimationTimer animationTimer;
+    private ScheduledExecutorService dataTimer;
+    private final LinkedList<GraphStats> graphDataSet = new LinkedList<>();
+    private static final int maxGraphDataPoints = 20;
     long prevTime;
     long prevInfections = 0;
     double speedModifier = 1;
+    private GraphStats lastDrawnData = null;
+    private static final double graphPointRadius = 3;
+
 
     @FXML
     BorderPane borderPane;
@@ -88,9 +94,8 @@ public class MainController implements Initializable {
 
     InfectableBalls balls = new InfectableBalls();
 
-    //Liste welche statistik enthält
-    List<GraphStats> statistics = new ArrayList<>();
-    double lastStatisticsSaveTime=0;
+
+
 
 
 
@@ -114,6 +119,7 @@ public class MainController implements Initializable {
         this.balls.generateBalls(SimulationValues.getBallCount(),SimulationValues.getInitalInfections());
         this.simulationTimer();
         this.startAnimationTimer();
+        this.startDataTimer();
 
         forwardButton.setOnMouseClicked(event -> {
             speedModifier+=0.25;
@@ -135,6 +141,7 @@ public class MainController implements Initializable {
                 stage.setScene(new Scene(root, 1280, 720));
                 stage.show();
                 ((Node)(event.getSource())).getScene().getWindow().hide();
+
             }
             catch (IOException e) {
                 e.printStackTrace();
@@ -144,15 +151,20 @@ public class MainController implements Initializable {
         resetButton.setOnMouseClicked(event -> {
             this.balls.removeAllBalls();
             this.balls.generateBalls(SimulationValues.getBallCount(),SimulationValues.getInitalInfections());
+            this.graphDataSet.clear();
+            this.drawGraph();
             //System.out.println(prevTime);
         });
 
         pauseButton.setOnMouseClicked(event -> {
             this.stopAnimationTimer();
+            this.stopDataTimer();
         });
         playButton.setOnMouseClicked(event -> {
             this.startAnimationTimer();
+            this.startDataTimer();
         });
+
     }
 
 
@@ -173,7 +185,6 @@ public class MainController implements Initializable {
                 //Zeitunterschied zwischen diesem und vorherigen frame in 100stel sekunden
                 double deltaTimeSeconds=(double)(currentNanoTime-prevNanoTime)/10000000;
                 System.out.println(deltaTimeSeconds);
-
                 //handles everything sorrounding the Infectable balls
                 //System.out.println(deltaTimeSeconds);
                 simulationGC = balls.drawAndHandleTimestep(simulationGC, deltaTimeSeconds*speedModifier);
@@ -220,7 +231,8 @@ public class MainController implements Initializable {
 
                 System.out.println("curtime"+balls.curTime);
 
-                handleGraph();
+
+                //handleGraph();
 
 
 
@@ -228,34 +240,94 @@ public class MainController implements Initializable {
         };
     }
 
-    private void handleGraph() {
+    private void startDataTimer(){
+        if(dataTimer == null) {
+            dataTimer = Executors.newScheduledThreadPool(1);
+            dataTimer.scheduleAtFixedRate(this::handleDataCollection, 0, 1, TimeUnit.SECONDS);
+        }
+    }
 
+    private void stopDataTimer() {
+        if (dataTimer != null) {
+            dataTimer.shutdown();
+            dataTimer = null;
+        }
+    }
+
+    private void handleDataCollection(){
         double percentInfected = this.balls.getCountByState(InfectableBalls.InfectionStatus.INFECTED) / (double) SimulationValues.getBallCount();
         double percentSusceptible = this.balls.getCountByState(InfectableBalls.InfectionStatus.SUSCEPTIBLE) / (double) SimulationValues.getBallCount();
         double percentRemoved = this.balls.getCountByState(InfectableBalls.InfectionStatus.REMOVED) / (double) SimulationValues.getBallCount();
 
-
-        if(balls.curTime-this.lastStatisticsSaveTime>0.1|| this.lastStatisticsSaveTime==0){
-            this.statistics.add(new GraphStats(percentInfected,percentSusceptible,percentRemoved));
-            this.lastStatisticsSaveTime= balls.curTime;
+        this.graphDataSet.add(new GraphStats(percentInfected,percentSusceptible,percentRemoved));
+        if(this.graphDataSet.size() > maxGraphDataPoints){
+            this.graphDataSet.removeFirst();
+        }
+        this.drawGraph();
         }
 
-        //DrawRemoved
-        this.graphGC.setFill(Color.GRAY);
-        double removedHeight = percentRemoved * GraphCanvasParams.getHeight();
-        double width = GraphCanvasParams.getWidth();
-        this.graphGC.fillRect(0, GraphCanvasParams.getHeight() - removedHeight, width, removedHeight);
 
-        //drawInfected
-        this.graphGC.setFill(Color.RED);
-        double infectedHeight = percentInfected * GraphCanvasParams.getHeight();
-        this.graphGC.fillRect(0, GraphCanvasParams.getHeight() - removedHeight - infectedHeight, width, infectedHeight);
-        System.out.println("PercentInfected" + this.balls.getCountByState(InfectableBalls.InfectionStatus.INFECTED));
+    private void drawGraph() {
 
-        //drawSusceptible
-        this.graphGC.setFill(Color.BLUE);
-        double susceptibleHeight = percentSusceptible * GraphCanvasParams.getHeight();
-        this.graphGC.fillRect(0, 0, width, susceptibleHeight);
+        /*
+            //DrawRemoved
+            this.graphGC.setFill(Color.GRAY);
+            double removedHeight = percentRemoved * GraphCanvasParams.getHeight();
+            double width = GraphCanvasParams.getWidth();
+            this.graphGC.fillRect(0, GraphCanvasParams.getHeight() - removedHeight, width, removedHeight);
+
+            //drawInfected
+            this.graphGC.setFill(Color.RED);
+            double infectedHeight = percentInfected * GraphCanvasParams.getHeight();
+            this.graphGC.fillRect(0, GraphCanvasParams.getHeight() - removedHeight - infectedHeight, width, infectedHeight);
+            System.out.println("PercentInfected" + this.balls.getCountByState(InfectableBalls.InfectionStatus.INFECTED));
+
+            //drawSusceptible
+            this.graphGC.setFill(Color.BLUE);
+            double susceptibleHeight = percentSusceptible * GraphCanvasParams.getHeight();
+            this.graphGC.fillRect(0, 0, width, susceptibleHeight);
+
+         */
+        this.graphGC.clearRect(0, 0, GraphCanvasParams.getWidth(), GraphCanvasParams.getHeight());
+        if(this.graphDataSet.size() > 1 && lastDrawnData != this.graphDataSet.getLast()) {
+            this.graphGC.setLineWidth(2);
+
+            GraphStats prevGraphStats = null;
+            double offsetX = 0;
+            double lineWidth = (double) GraphCanvasParams.getWidth() / (graphDataSet.size() - 1);
+
+            for (GraphStats graphStats : graphDataSet) {
+                if (prevGraphStats != null) {
+                    this.graphGC.setStroke(Color.GRAY);
+                    this.graphGC.strokeLine(offsetX, (1 - prevGraphStats.percentRemoved )* GraphCanvasParams.getHeight(), offsetX + lineWidth, (1 - graphStats.percentRemoved) * GraphCanvasParams.getHeight());
+
+                    this.graphGC.setStroke(Color.RED);
+                    this.graphGC.strokeLine(offsetX,  (1- prevGraphStats.percentInfected)* GraphCanvasParams.getHeight(), offsetX + lineWidth, (1-graphStats.percentInfected) * GraphCanvasParams.getHeight());
+
+                    this.graphGC.setStroke(Color.BLUE);
+                    this.graphGC.strokeLine(offsetX, (1-prevGraphStats.percentSuspectible) * GraphCanvasParams.getHeight(), offsetX + lineWidth, (1-graphStats.percentSuspectible) * GraphCanvasParams.getHeight());
+
+                    offsetX += lineWidth;
+
+                }
+
+                this.graphGC.setFill(Color.GRAY);
+                this.graphGC.fillOval(offsetX - graphPointRadius, (1- graphStats.percentRemoved) * GraphCanvasParams.getHeight() - graphPointRadius,graphPointRadius*2, graphPointRadius*2);
+
+                this.graphGC.setFill(Color.RED);
+                this.graphGC.fillOval(offsetX - graphPointRadius, (1-graphStats.percentInfected) * GraphCanvasParams.getHeight() - graphPointRadius,graphPointRadius*2, graphPointRadius*2);
+
+                this.graphGC.setFill(Color.BLUE);
+                this.graphGC.fillOval(offsetX - graphPointRadius, (1-graphStats.percentSuspectible) * GraphCanvasParams.getHeight() - graphPointRadius,graphPointRadius*2, graphPointRadius*2);
+
+                prevGraphStats = graphStats;
+
+            }
+
+        }
+        lastDrawnData = this.graphDataSet.getLast();
+
+
     }
     private void resetPrevTime(){
         this.prevTime = System.nanoTime();
@@ -274,5 +346,10 @@ public class MainController implements Initializable {
             this.animationTimer.stop();
         }
     }
+
+    public void shutdown(){
+        this.stopDataTimer();
+    }
+
 
 }

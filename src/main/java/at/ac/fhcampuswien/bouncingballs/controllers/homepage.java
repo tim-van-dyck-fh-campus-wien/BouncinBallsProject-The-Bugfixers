@@ -37,13 +37,15 @@ public class homepage {
 
             SimulationValues.setBallCount(Integer.parseInt(ptext.getText()));
             SimulationValues.setInitalInfections(Integer.parseInt(itext.getText()));
-            loader.setController(new MainController());
+            MainController controller = new MainController();
+            loader.setController(controller);
             Parent root = loader.load();
             Stage stage = new Stage();
             stage.setTitle("Bouncing-Balls");
             stage.setScene(new Scene(root, 1280, 720));
             stage.show();
             ((Node)(event.getSource())).getScene().getWindow().hide();
+            stage.setOnHidden(e-> controller.shutdown());
         }
         catch (IOException e) {
             e.printStackTrace();
