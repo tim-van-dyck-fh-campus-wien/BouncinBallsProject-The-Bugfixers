@@ -38,6 +38,7 @@ public class InfectableBall {
 
     public InfectableBall(Point coordinates, int identifier, boolean initInfected) {
         this.id = identifier;
+        //If initInfected is true => ball should be initiated as infected!
         if (initInfected) {
             this.infectBall(0);
 
@@ -133,15 +134,15 @@ public class InfectableBall {
 
     }
 
+    //Function used to infect the ball
     public void infectBall(double timeOfInfection) {
         if (this.infectionStatus == InfectableBalls.InfectionStatus.SUSCEPTIBLE) {
             this.infectionStatus = InfectableBalls.InfectionStatus.INFECTED;
             this.startOfInfection = timeOfInfection;
         }
     }
-    //Save relevant Information when simulation is paused
 
-
+//Check at each timestep wheter a given Infection ends
     public void refreshInfectionStatus(double currentTime) {
         if (this.infectionStatus == InfectableBalls.InfectionStatus.INFECTED) {
             double delta = currentTime - this.startOfInfection;

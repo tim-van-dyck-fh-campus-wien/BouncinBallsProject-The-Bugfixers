@@ -13,6 +13,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
+<?import javafx.scene.layout.StackPane?>
 <BorderPane fx:id="borderPane" prefHeight="494.0" prefWidth="998.0" styleClass="label-count" xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1">
 
     <left>
@@ -59,45 +60,31 @@
    <bottom>
       <VBox prefHeight="155.0" prefWidth="998.0" BorderPane.alignment="CENTER">
          <children>
-            <ButtonBar prefHeight="55.0" prefWidth="998.0">
-               <buttons>
-                <Button fx:id="newSim" mnemonicParsing="false" text="New simulation">
-                     <font>
-                        <Font size="12.0" />
-                     </font></Button>
-                  <Button fx:id="resetButton" mnemonicParsing="false" text="Reset">
-                     <font>
-                        <Font size="12.0" />
-                     </font></Button>
-                  <Button mnemonicParsing="false" text="Quarantäne">
-                     <font>
-                        <Font size="12.0" />
-                     </font></Button>
-                  <Button mnemonicParsing="false" text="Social Distancing">
-                     <font>
-                        <Font size="12.0" />
-                     </font></Button>
-                <Button fx:id="playButton" mnemonicParsing="false" text="Play">
-                     <font>
-                        <Font size="12.0" />
-                     </font></Button>
-                  <Button id="pauseButton" fx:id="pauseButton" mnemonicParsing="false" text="Pause">
-                     <font>
-                        <Font size="12.0" />
-                     </font></Button>
-                  <Button fx:id="forwardButton" mnemonicParsing="false" text="Fast Forward">
-                     <font>
-                        <Font size="12.0" />
-                     </font>
-                  </Button>
-                  <Button fx:id="rewindButton" mnemonicParsing="false" text="Slower">
-                     <font>
-                        <Font size="12.0" />
-                     </font>
-                  </Button>
-               </buttons>
-            </ButtonBar>
-            <Slider />
+                <ButtonBar prefWidth="998" prefHeight="55.0" >
+                    <buttons>
+                        <Button fx:id="newSim" mnemonicParsing="false" text="New simulation" styleClass="bigButton">
+                        </Button>
+                        <Button fx:id="resetButton" mnemonicParsing="false" text="Reset" styleClass="bigButton">
+                        </Button>
+                        <!-- following two buttons will be implemented later !-->
+                        <Button mnemonicParsing="false" text="Quarantine" disable="true" styleClass="bigButton">
+                        </Button>
+                        <Button mnemonicParsing="false" text="Social Distancing" disable="true" styleClass="bigButton">
+                        </Button>
+                        <Button fx:id="playButton" mnemonicParsing="false" text="Play" styleClass="bigButton">
+                        </Button>
+                        <Button id="pauseButton" fx:id="pauseButton" mnemonicParsing="false" text="Pause" styleClass="bigButton">
+                        </Button>
+                        <Button fx:id="forwardButton" mnemonicParsing="false" text="Faster" styleClass="bigButton">
+
+                        </Button>
+                        <Button fx:id="rewindButton" mnemonicParsing="false" text="Slower" styleClass="bigButton">
+
+                        </Button>
+                    </buttons>
+                </ButtonBar>
+
+            <Slider prefWidth="998" />
          </children>
       </VBox>
    </bottom>
