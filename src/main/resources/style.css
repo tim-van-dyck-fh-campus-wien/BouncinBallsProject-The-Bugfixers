@@ -4,4 +4,7 @@
 .homepage {
 -fx-font-size: 20pt;
 }
+.bigButton{
+-fx-font-size:10pt;
+}
 
