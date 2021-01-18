@@ -30,6 +30,8 @@ public class InfectableBalls {
     //needed for correct collision handling!
     public double previousTimeDifference=-1;
 
+    public Quarantine quarantine;
+
     public long getCountByState(InfectionStatus status){
         return this.balls.stream().filter(ball -> ball.infectionStatus == status).count();
     }
@@ -91,10 +93,39 @@ public class InfectableBalls {
         gc = this.handleCollision(gc,time);
         this.moveAllBalls(time);
         this.previousTimeDifference=time;
+        if(quarantine!=null){
+          if(quarantine.quarantineActive){
+              gc = quarantine.draw(gc);
+              //when quarantine just ended returns true, thus unquarantine the balls
+              if(quarantine.refreshQuarantineStatus(this.curTime)){
+                  this.endQuarantine();
+              }
+
+              checkQuarantineAreaCollisions();
+          }
+        }
         return draw(gc);
 
-    }
 
+    }
+    private void endQuarantine(){
+        for(InfectableBall el:balls){
+            el.unQuarantineBall();
+        }
+    }
+    public void checkQuarantineAreaCollisions(){
+        for(InfectableBall el : balls){
+            el.checkBorderCollisionQurantine(quarantine.quarantineArea);
+        }
+    }
+    public void startNewQuarantine(Point coordinates){
+        quarantine = new Quarantine(coordinates,this.curTime);
+        for(Point p : tree.query(quarantine.quarantineArea)){
+            List<InfectableBall> res = balls.stream().filter(v -> (v.getIdOfInstance() == p.id)).collect(Collectors.toList());
+            res.get(0).quarantineBall();
+        }
+
+    }
     //draws all the balls
     public GraphicsContext draw(GraphicsContext gc) {
         for (InfectableBall el : balls) {

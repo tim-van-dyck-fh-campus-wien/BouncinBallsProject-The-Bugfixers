@@ -4,8 +4,10 @@ import at.ac.fhcampuswien.bouncingballs.params.InfectableBallsParams;
 import at.ac.fhcampuswien.bouncingballs.params.SimulationCanvasParams;
 import at.ac.fhcampuswien.bouncingballs.params.SimulationValues;
 import at.ac.fhcampuswien.bouncingballs.shapes.Point;
+import at.ac.fhcampuswien.bouncingballs.shapes.Rectangle;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
+import org.w3c.dom.css.Rect;
 
 import java.util.Random;
 
@@ -19,6 +21,7 @@ public class InfectableBall {
     //Time where the ball was infected
     private double startOfInfection;
     private double timeElapsedSinceInfection;
+    private boolean isQuarantined=false;
 
     public Point getVelocityVector() {
         return velocityVector;
@@ -101,6 +104,7 @@ public class InfectableBall {
         } else if (infectionStatus == InfectableBalls.InfectionStatus.REMOVED) {
             gc.setFill(Color.GRAY);
         }
+
         //fillOval uses the top left corner, and the last two parameters describe the diameter of the oval, thus the radius is multiplied by 2
         gc.fillOval(coordinates.x - InfectableBallsParams.ballradius, coordinates.y - InfectableBallsParams.ballradius, InfectableBallsParams.ballradius * 2, InfectableBallsParams.ballradius * 2);
         return gc;
@@ -112,9 +116,12 @@ public class InfectableBall {
 
     //translate the ball according to it's velocity vector
     public void move(double time) {
-        this.coordinates.x += this.velocityVector.x * time;
-        this.coordinates.y += this.velocityVector.y * time;
-        this.checkBorderCollision();
+        //Balls should not move when quarantined
+        if(!this.isQuarantined){
+            this.coordinates.x += this.velocityVector.x * time;
+            this.coordinates.y += this.velocityVector.y * time;
+            this.checkBorderCollision();
+        }
     }
 
     //Check if Ball is colliding with the edges of the canvas
@@ -133,6 +140,55 @@ public class InfectableBall {
         }
 
     }
+    public void checkBorderCollisionQurantine(Rectangle quarantineArea){
+        this.checkBorderCollisionRect(quarantineArea);
+    }
+    //Check if ball is colliding with edges of given boundary and handle collision
+    private void checkBorderCollisionRect(Rectangle boundary){
+        double deltaVerticalEdge=-1;
+        double deltaHorizontalEdge=-1;
+        if(!isQuarantined){
+            if(this.coordinates.y+InfectableBallsParams.ballradius>boundary.y- boundary.h&&this.coordinates.y-InfectableBallsParams.ballradius<boundary.y+ boundary.h){
+                //kollision mit linker seite
+                if(this.coordinates.x+InfectableBallsParams.ballradius>boundary.x- boundary.w&&this.coordinates.x+InfectableBallsParams.ballradius<boundary.x){
+                   // this.velocityVector.x=-this.velocityVector.x;
+                    deltaHorizontalEdge = this.coordinates.x+InfectableBallsParams.ballradius-(boundary.x- boundary.w);
+                }
+                //kollision mit rechter seite
+                if(this.coordinates.x-InfectableBallsParams.ballradius>boundary.x&&this.coordinates.x-InfectableBallsParams.ballradius<boundary.x+ boundary.w){
+                    //this.velocityVector.x=-this.velocityVector.x;
+                    deltaHorizontalEdge = (boundary.x+ boundary.w)-(this.coordinates.x-InfectableBallsParams.ballradius);
+                }
+
+            }
+            if(this.coordinates.x+InfectableBallsParams.ballradius> boundary.x- boundary.w && this.coordinates.x-InfectableBallsParams.ballradius< boundary.x+ boundary.w){
+                //kollision mit oberer seite
+                if(this.coordinates.y+InfectableBallsParams.ballradius> boundary.y- boundary.h && this.coordinates.y-InfectableBallsParams.ballradius < boundary.y){
+                    //this.velocityVector.y = -this.velocityVector.y;
+                    deltaVerticalEdge = this.coordinates.y+InfectableBallsParams.ballradius-(boundary.y- boundary.h);
+                }
+                //untere seite
+                if(this.coordinates.y-InfectableBallsParams.ballradius> boundary.y && this.coordinates.y-InfectableBallsParams.ballradius < boundary.y+ boundary.h){
+                    deltaVerticalEdge = (boundary.y+ boundary.h)- (this.coordinates.y-InfectableBallsParams.ballradius);
+                }
+            }
+
+        }
+        if(deltaHorizontalEdge!=-1&&deltaVerticalEdge!=-1){
+            if(Math.abs(deltaHorizontalEdge)>Math.abs(deltaVerticalEdge)){
+                this.velocityVector.y=-this.velocityVector.y;
+            }else{
+                this.velocityVector.x = -this.velocityVector.x;
+            }
+            if(deltaHorizontalEdge<0||deltaVerticalEdge<0){
+                System.out.println("ERROR");
+            }
+        }
+        //Kollision mit Horizontaler Seite wahrscheinlicher...
+
+
+
+    }
 
     //Function used to infect the ball
     public void infectBall(double timeOfInfection) {
@@ -140,6 +196,12 @@ public class InfectableBall {
             this.infectionStatus = InfectableBalls.InfectionStatus.INFECTED;
             this.startOfInfection = timeOfInfection;
         }
+    }
+    public void quarantineBall(){
+        this.isQuarantined=true;
+    }
+    public void unQuarantineBall(){
+        this.isQuarantined=false;
     }
 
 //Check at each timestep wheter a given Infection ends

@@ -4,9 +4,19 @@ public class SimulationValues {
     private static int ballCount=900;
     private static double timeToRecover=5;
     private static int initalInfections=1;
+    private static double quarantineTime = 5;//Time the quarantine lasts
+    private static double quarantineSize=100;//Size of the Rectangle defining the quarantine
 
     public static int getInitalInfections() {
         return initalInfections;
+    }
+
+    public static double getQuarantineTime() {
+        return quarantineTime;
+    }
+
+    public static double getQuarantineSize() {
+        return quarantineSize;
     }
 
     public static void setInitalInfections(int initalInfections) {

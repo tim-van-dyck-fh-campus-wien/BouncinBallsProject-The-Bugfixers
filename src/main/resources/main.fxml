@@ -67,7 +67,7 @@
                         <Button fx:id="resetButton" mnemonicParsing="false" text="Reset" styleClass="bigButton">
                         </Button>
                         <!-- following two buttons will be implemented later !-->
-                        <Button mnemonicParsing="false" text="Quarantine" disable="true" styleClass="bigButton">
+                        <Button fx:id="quarantine" onAction="#quarantineEvt" mnemonicParsing="false" text="Quarantine"  styleClass="bigButton">
                         </Button>
                         <Button mnemonicParsing="false" text="Social Distancing" disable="true" styleClass="bigButton">
                         </Button>

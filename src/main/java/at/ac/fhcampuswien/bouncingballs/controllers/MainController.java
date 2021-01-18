@@ -2,10 +2,14 @@ package at.ac.fhcampuswien.bouncingballs.controllers;
 
 import at.ac.fhcampuswien.bouncingballs.balls.GraphStats;
 import at.ac.fhcampuswien.bouncingballs.balls.InfectableBalls;
+import at.ac.fhcampuswien.bouncingballs.balls.Quarantine;
 import at.ac.fhcampuswien.bouncingballs.params.GraphCanvasParams;
 import at.ac.fhcampuswien.bouncingballs.params.SimulationCanvasParams;
 import at.ac.fhcampuswien.bouncingballs.params.SimulationValues;
+import at.ac.fhcampuswien.bouncingballs.shapes.Point;
 import javafx.animation.AnimationTimer;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -17,6 +21,7 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
@@ -26,6 +31,7 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.net.URL;
 import java.util.LinkedList;
+import java.util.Random;
 import java.util.ResourceBundle;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -36,7 +42,7 @@ public class MainController implements Initializable {
     AnimationTimer animationTimer;
     private ScheduledExecutorService dataTimer;
     private final LinkedList<GraphStats> graphDataSet = new LinkedList<>();
-    private static final int maxGraphDataPoints = 20;
+    private static final int maxGraphDataPoints = 10000;
     long prevTime;
     long prevInfections = 0;
     double speedModifier = 1;
@@ -94,11 +100,20 @@ public class MainController implements Initializable {
 
     InfectableBalls balls = new InfectableBalls();
 
+    //Needed for setting the quarantine area
+    boolean getQuarantineCoordinates=false;
 
 
 
-
-
+    //Quarantine Button
+    @FXML protected void quarantineEvt(ActionEvent event) {
+        if(this.balls.quarantine==null){
+            getQuarantineCoordinates=true;
+        }
+        else if(this.balls.quarantine.quarantineActive==false){
+            getQuarantineCoordinates=true;
+        }
+    }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -164,6 +179,29 @@ public class MainController implements Initializable {
             this.startAnimationTimer();
             this.startDataTimer();
         });
+        //displaying the quarantine prior to setting the final location
+        simulation.setOnMouseMoved(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                if(getQuarantineCoordinates){
+                    if(event.getEventType()==MouseEvent.MOUSE_MOVED){
+                        Quarantine.setPreviewAreaCoordinates(new Point(event.getX(),event.getY()));
+                    }
+                }
+            }
+        });
+        //for setting the quarantines position
+        simulation.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                if(getQuarantineCoordinates){
+                    balls.startNewQuarantine(new Point(event.getX(),event.getY()));
+                    getQuarantineCoordinates=false;
+                }
+
+            }
+        });
+
 
     }
 
@@ -184,11 +222,13 @@ public class MainController implements Initializable {
                 simulationGC.fillRect(0, 0, 1000, 1000);
                 //Zeitunterschied zwischen diesem und vorherigen frame in 100stel sekunden
                 double deltaTimeSeconds=(double)(currentNanoTime-prevNanoTime)/10000000;
-                System.out.println(deltaTimeSeconds);
+                //System.out.println(deltaTimeSeconds);
                 //handles everything sorrounding the Infectable balls
                 //System.out.println(deltaTimeSeconds);
                 simulationGC = balls.drawAndHandleTimestep(simulationGC, deltaTimeSeconds*speedModifier);
-
+                if(getQuarantineCoordinates){
+                    simulationGC = Quarantine.drawQuarantinePreviewArea(simulationGC);
+                }
 
                 //Quadtree Test
 
@@ -229,13 +269,6 @@ public class MainController implements Initializable {
                 prevTime = currentNanoTime;
 
 
-                System.out.println("curtime"+balls.curTime);
-
-
-                //handleGraph();
-
-
-
             }
         };
     }
@@ -243,7 +276,7 @@ public class MainController implements Initializable {
     private void startDataTimer(){
         if(dataTimer == null) {
             dataTimer = Executors.newScheduledThreadPool(1);
-            dataTimer.scheduleAtFixedRate(this::handleDataCollection, 0, 1, TimeUnit.SECONDS);
+            dataTimer.scheduleAtFixedRate(this::handleDataCollection, 0, 100, TimeUnit.MILLISECONDS);
         }
     }
 
@@ -260,8 +293,9 @@ public class MainController implements Initializable {
         double percentRemoved = this.balls.getCountByState(InfectableBalls.InfectionStatus.REMOVED) / (double) SimulationValues.getBallCount();
 
         this.graphDataSet.add(new GraphStats(percentInfected,percentSusceptible,percentRemoved));
-        if(this.graphDataSet.size() > maxGraphDataPoints){
-            this.graphDataSet.removeFirst();
+       if(this.graphDataSet.size() > maxGraphDataPoints){
+           Random rand = new Random();
+           this.graphDataSet.removeFirst();
         }
         this.drawGraph();
         }

@@ -1,7 +1,7 @@
 package at.ac.fhcampuswien.bouncingballs.params;
 
 public class InfectableBallsParams {
-    public static int ballradius=2;
+    public static int ballradius=6;
     //pixel per 100ths of a second
-    public static double velocity=0.1;
+    public static double velocity=0.2;
 }
