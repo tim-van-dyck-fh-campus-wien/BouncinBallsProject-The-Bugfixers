@@ -57,7 +57,7 @@ public class MainController implements Initializable {
     GraphicsContext graphGC;
 
     @FXML
-    GridPane containerleft;
+    GridPane containerLeft;
 
     @FXML
     private Label populationCount;

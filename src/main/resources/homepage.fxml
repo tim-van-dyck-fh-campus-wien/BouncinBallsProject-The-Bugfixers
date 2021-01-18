@@ -12,7 +12,7 @@
 <?import java.net.URL?>
 <?import javafx.scene.text.Font?>
 <BorderPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml" fx:controller="at.ac.fhcampuswien.bouncingballs.controllers.homepage" styleClass="homepage">
+            xmlns:fx="http://javafx.com/fxml" fx:controller="at.ac.fhcampuswien.bouncingballs.controllers.Homepage" styleClass="homepage">
 
     <top>
         <GridPane fx:id="title" alignment="TOP_CENTER" >
@@ -33,13 +33,13 @@
             <Label text=""></Label>
             <Label text=""></Label>
             <Label text="Population Size: "></Label>
-            <TextField fx:id="ptext" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+            <TextField fx:id="pText" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
             <Label text="Infectiousness: "></Label>
-            <TextField fx:id="itext" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+            <TextField fx:id="iText" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
             <Label text=""></Label>
             <Button fx:id="button" onAction="#manageButton" prefWidth="200.0" prefHeight="100"
                     text="START" GridPane.columnIndex="0" GridPane.rowIndex="0" />
-            <Text fx:id="actiontarget"
+            <Text fx:id="actionTarget"
                   GridPane.columnIndex="1" GridPane.rowIndex="6"/>
         </VBox>
 
