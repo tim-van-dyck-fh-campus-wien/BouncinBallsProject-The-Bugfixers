@@ -42,7 +42,7 @@ public class MainController implements Initializable {
     AnimationTimer animationTimer;
     private ScheduledExecutorService dataTimer;
     private final LinkedList<GraphStats> graphDataSet = new LinkedList<>();
-    private static final int maxGraphDataPoints = 10000;
+    private static final int maxGraphDataPoints = 50000;
     long prevTime;
     long prevInfections = 0;
     double speedModifier = 1;
@@ -164,11 +164,16 @@ public class MainController implements Initializable {
         });
 
         resetButton.setOnMouseClicked(event -> {
+            //Reset Quarantine Area if a quarantine object exists
+            if(this.balls.quarantine!=null){
+                this.balls.quarantine.resetQuarantine();
+                this.getQuarantineCoordinates=false;
+            }
             this.balls.removeAllBalls();
             this.balls.generateBalls(SimulationValues.getBallCount(),SimulationValues.getInitalInfections());
             this.graphDataSet.clear();
             this.drawGraph();
-            //System.out.println(prevTime);
+
         });
 
         pauseButton.setOnMouseClicked(event -> {

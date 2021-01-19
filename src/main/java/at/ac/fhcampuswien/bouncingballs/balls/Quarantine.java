@@ -6,16 +6,21 @@ import at.ac.fhcampuswien.bouncingballs.shapes.Rectangle;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
+//The Class representing the Quarantine Area activated by clicking the quarantine button
 public class Quarantine {
-    Rectangle quarantineArea;
-    private double startOfQuarantine;
+    Rectangle quarantineArea;//Outline of the Quarantined Area
+    private double startOfQuarantine;//starttime of the quarantine
     public boolean quarantineActive = false;
-    private static Rectangle tempQuarantinePreviewArea;
+    private static Rectangle tempQuarantinePreviewArea;//used for drawing the outline of the quarantine area before it has beeen placed by clicking
 
     public Quarantine(Point coordinates, double startTime) {
         quarantineArea = new Rectangle(coordinates.x, coordinates.y, SimulationValues.getQuarantineSize(), SimulationValues.getQuarantineSize());
         startOfQuarantine = startTime;
         quarantineActive = true;
+    }
+
+    public void resetQuarantine(){
+        quarantineActive=false;
     }
 
     public GraphicsContext draw(GraphicsContext gc) {
@@ -25,9 +30,11 @@ public class Quarantine {
         }
         return gc;
     }
+
     public static void setPreviewAreaCoordinates(Point cord){
         tempQuarantinePreviewArea = new Rectangle(cord.x,cord.y,SimulationValues.getQuarantineSize(),SimulationValues.getQuarantineSize());
     }
+
     public static GraphicsContext drawQuarantinePreviewArea(GraphicsContext gc){
         gc.setStroke(Color.DARKGOLDENROD);
         if(tempQuarantinePreviewArea!=null){
@@ -38,10 +45,8 @@ public class Quarantine {
 
     //returns true if quarantine just ended otherwise false
     public boolean refreshQuarantineStatus(double currentTime) {
-        if (quarantineActive) {
+        if (quarantineActive) {//Checks Quarantine status every timestep
             double delta = currentTime - this.startOfQuarantine;
-            // System.out.println("start of infection is"+startOfInfection);
-            //System.out.println(deltaSeconds);
             if (delta > SimulationValues.getQuarantineTime()) {
                 this.quarantineActive = false;
                 return true;
