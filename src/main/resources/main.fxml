@@ -84,7 +84,6 @@
                     </buttons>
                 </ButtonBar>
 
-            <Slider prefWidth="998" />
          </children>
       </VBox>
    </bottom>

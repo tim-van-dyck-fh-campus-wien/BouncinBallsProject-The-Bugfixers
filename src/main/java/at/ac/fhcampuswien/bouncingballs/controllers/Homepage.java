@@ -35,6 +35,7 @@ public class Homepage {
             loader.setController(controller);
             Parent root = loader.load();
             Stage stage = new Stage();
+            stage.setResizable(false);
             stage.setTitle("Bouncing-Balls");
             stage.setScene(new Scene(root, 1280, 720));
             stage.show();
