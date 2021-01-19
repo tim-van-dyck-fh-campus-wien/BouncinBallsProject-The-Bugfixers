@@ -60,25 +60,25 @@
    <bottom>
       <VBox prefHeight="155.0" prefWidth="998.0" BorderPane.alignment="CENTER">
          <children>
-                <ButtonBar prefWidth="998" prefHeight="55.0" >
+                <ButtonBar  prefWidth="998" prefHeight="55.0" >
                     <buttons>
-                        <Button fx:id="newSim" mnemonicParsing="false" text="New simulation" styleClass="bigButton">
+                        <Button fx:id="newSim" mnemonicParsing="false" text="New simulation" styleClass="bigButton" ButtonBar.buttonData="LEFT">
                         </Button>
-                        <Button fx:id="resetButton" mnemonicParsing="false" text="Reset" styleClass="bigButton">
+                        <Button fx:id="resetButton" mnemonicParsing="false" text="Reset" styleClass="bigButton" ButtonBar.buttonData="LEFT">
                         </Button>
                         <!-- following two buttons will be implemented later !-->
-                        <Button fx:id="quarantine" onAction="#quarantineEvt" mnemonicParsing="false" text="Quarantine"  styleClass="bigButton">
+                        <Button fx:id="quarantine" onAction="#quarantineEvt" mnemonicParsing="false" text="Quarantine"  styleClass="bigButton" ButtonBar.buttonData="LEFT">
                         </Button>
-                        <Button mnemonicParsing="false" text="Social Distancing" disable="true" styleClass="bigButton">
+                        <Button mnemonicParsing="false" text="Social Distancing" disable="true" styleClass="bigButton" ButtonBar.buttonData="LEFT">
                         </Button>
-                        <Button fx:id="playButton" mnemonicParsing="false" text="Play" styleClass="bigButton">
+                        <Button fx:id="playButton" mnemonicParsing="false" text="Play" styleClass="bigButton" ButtonBar.buttonData="LEFT">
                         </Button>
-                        <Button id="pauseButton" fx:id="pauseButton" mnemonicParsing="false" text="Pause" styleClass="bigButton">
+                        <Button id="pauseButton" fx:id="pauseButton" mnemonicParsing="false" text="Pause" styleClass="bigButton" ButtonBar.buttonData="LEFT">
                         </Button>
-                        <Button fx:id="forwardButton" mnemonicParsing="false" text="Faster" styleClass="bigButton">
+                        <Button fx:id="forwardButton" mnemonicParsing="false" text="Faster" styleClass="bigButton" ButtonBar.buttonData="LEFT">
 
                         </Button>
-                        <Button fx:id="rewindButton" mnemonicParsing="false" text="Slower" styleClass="bigButton">
+                        <Button fx:id="rewindButton" mnemonicParsing="false" text="Slower" styleClass="bigButton" ButtonBar.buttonData="LEFT">
 
                         </Button>
                     </buttons>
