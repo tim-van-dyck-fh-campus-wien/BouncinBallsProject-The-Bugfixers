@@ -154,6 +154,7 @@ public class MainController implements Initializable {
                 Stage stage = new Stage();
                 stage.setTitle("Bouncing-Balls");
                 stage.setScene(new Scene(root, 1280, 720));
+                stage.setResizable(false);
                 stage.show();
                 ((Node)(event.getSource())).getScene().getWindow().hide();
 

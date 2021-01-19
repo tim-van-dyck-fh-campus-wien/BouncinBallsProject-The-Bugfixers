@@ -83,7 +83,6 @@
                         </Button>
                     </buttons>
                 </ButtonBar>
-
          </children>
       </VBox>
    </bottom>
