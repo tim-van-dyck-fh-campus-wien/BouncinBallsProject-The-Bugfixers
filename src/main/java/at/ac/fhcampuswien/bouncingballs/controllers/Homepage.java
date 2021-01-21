@@ -34,18 +34,60 @@ public class Homepage {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("main.fxml"));
 
-            SimulationValues.setBallCount(Integer.parseInt(pText.getText()));
-            SimulationValues.setInitalInfections(Integer.parseInt(iText.getText()));
-            InfectableBallsParams.setBallradius(Integer.parseInt(bText.getText()));
+            String pTextNoSpace = pText.getText().replaceAll(" +","");
+            String iTextNoSpace = iText.getText().replaceAll(" +","");
+            String bTextNoSpace =bText.getText().replaceAll(" +","");
 
-            if (Integer.parseInt(pText.getText()) > 5000) {
+            int population;
+            int initialInfections;
+            int ballRadius;
+
+            try{
+                population = Integer.parseInt(pTextNoSpace);
+                initialInfections = Integer.parseInt(iTextNoSpace);
+                ballRadius = Integer.parseInt(bTextNoSpace);
+            }
+            catch(NumberFormatException e){
                 Alert errorAlert = new Alert(Alert.AlertType.ERROR);
                 errorAlert.setHeaderText("Input not valid");
-                errorAlert.setContentText("The Population size must be between 1 and ");
+                errorAlert.setContentText("Please enter numbers!");
+                errorAlert.showAndWait();
+
+                return;
+            }
+            SimulationValues.setBallCount(population);
+            SimulationValues.setInitalInfections(initialInfections);
+            InfectableBallsParams.setBallradius(ballRadius);
+
+
+            if (population > 5000) {
+                Alert errorAlert = new Alert(Alert.AlertType.ERROR);
+                errorAlert.setHeaderText("Input not valid");
+                errorAlert.setContentText("The Population size must be between 1 and 5000!");
                 errorAlert.showAndWait();
                 ;
 
-            } else {
+
+            }else if(ballRadius <= 0 || population <= 0 || initialInfections <= 0){
+                Alert errorAlert = new Alert(Alert.AlertType.ERROR);
+                errorAlert.setHeaderText("Input not valid");
+                errorAlert.setContentText("Please enter values greater than 0!");
+                errorAlert.showAndWait();
+            }
+        else if(ballRadius > 20 ){
+            Alert errorAlert = new Alert(Alert.AlertType.ERROR);
+            errorAlert.setHeaderText("Input not valid");
+            errorAlert.setContentText("Ballradius must not be greater than 20!");
+            errorAlert.showAndWait();
+        }
+            else if(initialInfections > population ){
+                Alert errorAlert = new Alert(Alert.AlertType.ERROR);
+                errorAlert.setHeaderText("Input not valid");
+                errorAlert.setContentText("Population has to be greater than Infectiousness!");
+                errorAlert.showAndWait();
+            }
+
+            else {
 
                 MainController controller = new MainController();
                 loader.setController(controller);
