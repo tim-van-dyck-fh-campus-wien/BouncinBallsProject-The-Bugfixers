@@ -1,4 +1,5 @@
 package at.ac.fhcampuswien.bouncingballs.controllers;
+import at.ac.fhcampuswien.bouncingballs.balls.InfectableBalls;
 import at.ac.fhcampuswien.bouncingballs.params.InfectableBallsParams;
 import at.ac.fhcampuswien.bouncingballs.params.SimulationValues;
 import javafx.event.ActionEvent;
@@ -84,6 +85,11 @@ public class Homepage {
                 Alert errorAlert = new Alert(Alert.AlertType.ERROR);
                 errorAlert.setHeaderText("Input not valid");
                 errorAlert.setContentText("Population has to be greater than Infectiousness!");
+                errorAlert.showAndWait();
+            } else if(!InfectableBalls.checkIfBallsFitInCanvas(population,initialInfections)){
+                Alert errorAlert = new Alert(Alert.AlertType.ERROR);
+                errorAlert.setHeaderText("The Balls dont fit");
+                errorAlert.setContentText("The Balls do not fit on the Canvas! Please reduce the Population-Count or the Ballradius");
                 errorAlert.showAndWait();
             }
 

@@ -133,7 +133,8 @@ public class MainController implements Initializable {
 
         this.graphGC.fillRect(0, 0, SimulationCanvasParams.getWidth(), SimulationCanvasParams.getHeight());
 
-        this.balls.generateBalls(SimulationValues.getBallCount(),SimulationValues.getInitalInfections());
+        //if generate balls returns false, the balls do not fit on the canvas
+       this.balls.generateBalls(SimulationValues.getBallCount(),SimulationValues.getInitalInfections());
         this.simulationTimer();
         this.startAnimationTimer();
        // this.startDataTimer();
@@ -217,7 +218,9 @@ public class MainController implements Initializable {
     }
 
 
+    private void navigateToHomePage(){
 
+    }
     public void simulationTimer() {
         animationTimer = new AnimationTimer() {
             @Override

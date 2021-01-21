@@ -7,6 +7,7 @@ import at.ac.fhcampuswien.bouncingballs.shapes.Circle;
 import at.ac.fhcampuswien.bouncingballs.shapes.Point;
 import at.ac.fhcampuswien.bouncingballs.shapes.Rectangle;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Alert;
 import javafx.scene.paint.Color;
 
 import java.util.ArrayList;
@@ -42,7 +43,19 @@ public class InfectableBalls {
     }
     //Function used to generate the balls from scratch and assign the start positions to them.
 
-    public void generateBalls(int population, int initialInfected) {
+    public static boolean checkIfBallsFitInCanvas(int population, int initialInfected){
+        //Space the balls evenly so that no balls overlap on initialization
+        //Calculate how many balls can fit horizontally on the canvas
+        int ballSpaceHorizontal = SimulationCanvasParams.getWidth() / (InfectableBallsParams.ballradius * 2);
+        int ballSpaceVertical = SimulationCanvasParams.getHeight() / (InfectableBallsParams.ballradius * 2);//calc how many balls fit vertically
+        if ((ballSpaceHorizontal * ballSpaceVertical > SimulationValues.getBallCount())) {
+            return true;
+        }
+        return false;
+    }
+
+    //returns false if not enough space
+    public boolean generateBalls(int population, int initialInfected) {
         Random rand = new Random();
 
         int infectedAddedCount = 0;
@@ -75,11 +88,14 @@ public class InfectableBalls {
                 this.balls.add(new InfectableBall(possibleBallCoordinates.get(randomIndex),cnt,infected));
                 possibleBallCoordinates.remove(randomIndex);
             }
-           // System.out.println("Balls are:" + this.balls.size() + "\nshould be: " + SimulationValues.getBallCount());
+            return true;
+
+            // System.out.println("Balls are:" + this.balls.size() + "\nshould be: " + SimulationValues.getBallCount());
 
         } else {//balls do not fit!
             System.out.println("ERROR!Balls cannot fit inside the canvas! ERROR");
         }
+        return false;
     }
 
     //function used to handle a single timestep
