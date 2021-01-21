@@ -31,6 +31,7 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.net.URL;
 import java.util.LinkedList;
+import java.util.NoSuchElementException;
 import java.util.Random;
 import java.util.ResourceBundle;
 import java.util.concurrent.Executors;
@@ -103,6 +104,7 @@ public class MainController implements Initializable {
     //Needed for setting the quarantine area
     boolean getQuarantineCoordinates=false;
 
+    double lastCallTime=0;
 
 
     //Quarantine Button
@@ -134,7 +136,7 @@ public class MainController implements Initializable {
         this.balls.generateBalls(SimulationValues.getBallCount(),SimulationValues.getInitalInfections());
         this.simulationTimer();
         this.startAnimationTimer();
-        this.startDataTimer();
+       // this.startDataTimer();
 
         forwardButton.setOnMouseClicked(event -> {
             speedModifier+=0.25;
@@ -173,17 +175,20 @@ public class MainController implements Initializable {
             this.balls.removeAllBalls();
             this.balls.generateBalls(SimulationValues.getBallCount(),SimulationValues.getInitalInfections());
             this.graphDataSet.clear();
+            this.lastCallTime=0;
             this.drawGraph();
 
         });
 
         pauseButton.setOnMouseClicked(event -> {
             this.stopAnimationTimer();
-            this.stopDataTimer();
+           // this.stopDataTimer();
         });
         playButton.setOnMouseClicked(event -> {
+            long curTime = System.nanoTime();
+            prevTime = curTime;//so that the time difference used for moving the balls etc is correct
             this.startAnimationTimer();
-            this.startDataTimer();
+            //this.startDataTimer();
         });
         //displaying the quarantine prior to setting the final location
         simulation.setOnMouseMoved(new EventHandler<MouseEvent>() {
@@ -236,6 +241,7 @@ public class MainController implements Initializable {
                     simulationGC = Quarantine.drawQuarantinePreviewArea(simulationGC);
                 }
 
+
                 //Quadtree Test
 
                 /*double x,y,w,h;
@@ -275,11 +281,18 @@ public class MainController implements Initializable {
                 prevTime = currentNanoTime;
 
 
+
+                if(balls.curTime-lastCallTime>0.1){
+                    handleDataCollection();
+                    lastCallTime=balls.curTime;
+                }
+
+
             }
         };
     }
 
-    private void startDataTimer(){
+    /*private void startDataTimer(){
         if(dataTimer == null) {
             dataTimer = Executors.newScheduledThreadPool(1);
             dataTimer.scheduleAtFixedRate(this::handleDataCollection, 0, 100, TimeUnit.MILLISECONDS);
@@ -291,7 +304,7 @@ public class MainController implements Initializable {
             dataTimer.shutdown();
             dataTimer = null;
         }
-    }
+    }*/
 
     private void handleDataCollection(){
         double percentInfected = this.balls.getCountByState(InfectableBalls.InfectionStatus.INFECTED) / (double) SimulationValues.getBallCount();
@@ -299,8 +312,7 @@ public class MainController implements Initializable {
         double percentRemoved = this.balls.getCountByState(InfectableBalls.InfectionStatus.REMOVED) / (double) SimulationValues.getBallCount();
 
         this.graphDataSet.add(new GraphStats(percentInfected,percentSusceptible,percentRemoved));
-       if(this.graphDataSet.size() > maxGraphDataPoints){
-           Random rand = new Random();
+        if(this.graphDataSet.size() > maxGraphDataPoints){
            this.graphDataSet.removeFirst();
         }
         this.drawGraph();
@@ -365,8 +377,9 @@ public class MainController implements Initializable {
             }
 
         }
-        lastDrawnData = this.graphDataSet.getLast();
-
+        if(this.graphDataSet.size()>0){
+            lastDrawnData = this.graphDataSet.getLast();
+        }
 
     }
     private void resetPrevTime(){
@@ -387,9 +400,7 @@ public class MainController implements Initializable {
         }
     }
 
-    public void shutdown(){
-        this.stopDataTimer();
-    }
+
 
 
 }
