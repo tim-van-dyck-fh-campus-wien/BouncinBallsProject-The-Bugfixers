@@ -7,6 +7,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
@@ -37,20 +38,26 @@ public class Homepage {
             SimulationValues.setInitalInfections(Integer.parseInt(iText.getText()));
             InfectableBallsParams.setBallradius(Integer.parseInt(bText.getText()));
 
-            if(Integer.parseInt(pText.getText()) > 4000){
-                System.out.println("Population too big");
-            }
+            if (Integer.parseInt(pText.getText()) > 5000) {
+                Alert errorAlert = new Alert(Alert.AlertType.ERROR);
+                errorAlert.setHeaderText("Input not valid");
+                errorAlert.setContentText("The Population size must be between 1 and ");
+                errorAlert.showAndWait();
+                ;
 
-            MainController controller = new MainController();
-            loader.setController(controller);
-            Parent root = loader.load();
-            Stage stage = new Stage();
-            stage.setResizable(false);
-            stage.setTitle("Bouncing-Balls");
-            stage.setScene(new Scene(root, 1280, 720));
-            stage.show();
-            ((Node)(event.getSource())).getScene().getWindow().hide();
-            //stage.setOnHidden(e-> controller.shutdown());
+            } else {
+
+                MainController controller = new MainController();
+                loader.setController(controller);
+                Parent root = loader.load();
+                Stage stage = new Stage();
+                stage.setResizable(false);
+                stage.setTitle("Bouncing-Balls");
+                stage.setScene(new Scene(root, 1280, 720));
+                stage.show();
+                ((Node) (event.getSource())).getScene().getWindow().hide();
+                //stage.setOnHidden(e-> controller.shutdown());
+            }
         }
         catch (IOException e) {
             e.printStackTrace();
