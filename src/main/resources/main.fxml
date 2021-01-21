@@ -66,10 +66,7 @@
                         </Button>
                         <Button fx:id="resetButton" mnemonicParsing="false" text="Reset" styleClass="bigButton" ButtonBar.buttonData="LEFT">
                         </Button>
-                        <!-- following two buttons will be implemented later !-->
                         <Button fx:id="quarantine" onAction="#quarantineEvt" mnemonicParsing="false" text="Quarantine"  styleClass="bigButton" ButtonBar.buttonData="LEFT">
-                        </Button>
-                        <Button mnemonicParsing="false" text="Social Distancing" disable="true" styleClass="bigButton" ButtonBar.buttonData="LEFT">
                         </Button>
                         <Button fx:id="playButton" mnemonicParsing="false" text="Play" styleClass="bigButton" ButtonBar.buttonData="LEFT">
                         </Button>

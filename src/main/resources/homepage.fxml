@@ -19,7 +19,7 @@
             <VBox>
                 <Label text=""></Label>
                 <Label text=""></Label> <Label text=""></Label>
-                <Label fx:id="LegalLabel"  text= "The Bugfixers Pandemic" GridPane.halignment="RIGHT" GridPane.rowIndex="16">
+                <Label  text= "The Bugfixers Pandemic" GridPane.halignment="RIGHT" GridPane.rowIndex="16">
                     <font>
                         <Font name="System Bold" size="40.0" />
                     </font>
@@ -30,7 +30,6 @@
 <center>
     <GridPane fx:id="data" alignment="BASELINE_CENTER">
         <VBox alignment="CENTER">
-            <Label text=""></Label>
             <Label text=""></Label>
             <Label text="Population Size: "></Label>
             <TextField fx:id="pText" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
