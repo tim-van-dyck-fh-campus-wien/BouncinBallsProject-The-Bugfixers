@@ -1,4 +1,5 @@
 package at.ac.fhcampuswien.bouncingballs.controllers;
+import at.ac.fhcampuswien.bouncingballs.params.InfectableBallsParams;
 import at.ac.fhcampuswien.bouncingballs.params.SimulationValues;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -23,6 +24,9 @@ public class Homepage {
     @FXML
     private TextField iText;
 
+    @FXML
+    private TextField bText;
+
     private ResourceBundle resources;
 
     @FXML protected void manageButton(ActionEvent event) {
@@ -31,6 +35,12 @@ public class Homepage {
 
             SimulationValues.setBallCount(Integer.parseInt(pText.getText()));
             SimulationValues.setInitalInfections(Integer.parseInt(iText.getText()));
+            InfectableBallsParams.setBallradius(Integer.parseInt(bText.getText()));
+
+            if(Integer.parseInt(pText.getText()) > 4000){
+                System.out.println("Population too big");
+            }
+
             MainController controller = new MainController();
             loader.setController(controller);
             Parent root = loader.load();

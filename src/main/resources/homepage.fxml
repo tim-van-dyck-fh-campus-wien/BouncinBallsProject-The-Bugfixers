@@ -36,6 +36,8 @@
             <TextField fx:id="pText" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
             <Label text="Infectiousness: "></Label>
             <TextField fx:id="iText" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+            <Label text="Ballradius: "></Label>
+            <TextField fx:id="bText" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
             <Label text=""></Label>
             <Button fx:id="button" onAction="#manageButton" prefWidth="200.0" prefHeight="100"
                     text="START" GridPane.columnIndex="0" GridPane.rowIndex="0" />
