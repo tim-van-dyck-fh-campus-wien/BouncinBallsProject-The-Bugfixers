@@ -39,6 +39,8 @@ public class InfectableBall {
         this.coordinates = coordinates;
     }
 
+    //MONI initiInfected ist der ursprüngliche Zustand am Anfang der Simulation
+    //MONI identifier ist eine voll zahl um Bälle von einander zu unterscheiden
     public InfectableBall(Point coordinates, int identifier, boolean initInfected) {
         this.id = identifier;
         //If initInfected is true => ball should be initiated as infected!

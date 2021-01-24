@@ -66,6 +66,8 @@ public class MainController implements Initializable {
     @FXML
     GridPane containerLeft;
 
+
+    //MONI labels und buttons von FXML in Java Controller reinladen
     @FXML
     private Label populationCount;
 
@@ -102,18 +104,18 @@ public class MainController implements Initializable {
     InfectableBalls balls = new InfectableBalls();
 
     //Needed for setting the quarantine area
-    boolean getQuarantineCoordinates=false;
+    boolean getQuarantineCoordinates = false;
 
-    double lastCallTime=0;
+    double lastCallTime = 0;
 
 
     //Quarantine Button
-    @FXML protected void quarantineEvt(ActionEvent event) {
-        if(this.balls.quarantine==null){
-            getQuarantineCoordinates=true;
-        }
-        else if(this.balls.quarantine.quarantineActive==false){
-            getQuarantineCoordinates=true;
+    @FXML
+    protected void quarantineEvt(ActionEvent event) {
+        if (this.balls.quarantine == null) {
+            getQuarantineCoordinates = true;
+        } else if (this.balls.quarantine.quarantineActive == false) {
+            getQuarantineCoordinates = true;
         }
     }
 
@@ -134,60 +136,74 @@ public class MainController implements Initializable {
         this.graphGC.fillRect(0, 0, SimulationCanvasParams.getWidth(), SimulationCanvasParams.getHeight());
 
         //if generate balls returns false, the balls do not fit on the canvas
-       this.balls.generateBalls(SimulationValues.getBallCount(),SimulationValues.getInitalInfections());
+        this.balls.generateBalls(SimulationValues.getBallCount(), SimulationValues.getInitalInfections());
         this.simulationTimer();
         this.startAnimationTimer();
-       // this.startDataTimer();
+        // this.startDataTimer();
 
+        //MONI speedModifier höher setzen
         forwardButton.setOnMouseClicked(event -> {
-            speedModifier+=0.25;
+            speedModifier += 0.25;
         });
 
+        //MONI speedModifier runter setzen aber nicht kleiner als 0.1
         rewindButton.setOnMouseClicked(event -> {
-            if(speedModifier>0.1){
-                speedModifier-=0.25;
+            if (speedModifier > 0.1) {
+                speedModifier -= 0.25;
             }
         });
 
+        //MONI neue Simulation starten
         newSim.setOnMouseClicked(event -> {
             try {
+                //Animation stoppen um resources frei zu machen
                 this.animationTimer.stop();
+
+                //Homepage FXML laden
                 FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("homepage.fxml"));
                 Parent root = loader.load();
                 Stage stage = new Stage();
-                stage.setTitle("Bouncing-Balls");
+                stage.setTitle("Bouncing Balls");
                 stage.setScene(new Scene(root, 1280, 720));
                 stage.setResizable(false);
                 stage.show();
-                ((Node)(event.getSource())).getScene().getWindow().hide();
+                //Homepage FXML darstellen
+                ((Node) (event.getSource())).getScene().getWindow().hide();
 
-            }
-            catch (IOException e) {
+            } catch (IOException e) {
                 e.printStackTrace();
             }
         });
 
+        //MONI reseten der simulation
         resetButton.setOnMouseClicked(event -> {
             //Reset Quarantine Area if a quarantine object exists
-            if(this.balls.quarantine!=null){
+            if (this.balls.quarantine != null) {
                 this.balls.quarantine.resetQuarantine();
-                this.getQuarantineCoordinates=false;
+                this.getQuarantineCoordinates = false;
             }
+            //Alte bälle löschen
             this.balls.removeAllBalls();
-            this.balls.generateBalls(SimulationValues.getBallCount(),SimulationValues.getInitalInfections());
+            //Wieder neu erstellen, mit der Menge an Bällen die wir gegeben haben
+            this.balls.generateBalls(SimulationValues.getBallCount(), SimulationValues.getInitalInfections());
+            //Diagramm auf 0 setzen
             this.graphDataSet.clear();
-            this.lastCallTime=0;
+            this.lastCallTime = 0;
             this.drawGraph();
-
         });
 
+        //MONI pause button, die animationstimer und somit die simulation wird pausiert und die
+        //Bälle können sich nicht mehr bewegen
         pauseButton.setOnMouseClicked(event -> {
             this.stopAnimationTimer();
-           // this.stopDataTimer();
+            // this.stopDataTimer();
         });
+
+        //MONI animation timer starten
         playButton.setOnMouseClicked(event -> {
             long curTime = System.nanoTime();
-            prevTime = curTime;//so that the time difference used for moving the balls etc is correct
+            //so that the time difference used for moving the balls etc is correct
+            prevTime = curTime;
             this.startAnimationTimer();
             //this.startDataTimer();
         });
@@ -195,9 +211,9 @@ public class MainController implements Initializable {
         simulation.setOnMouseMoved(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
-                if(getQuarantineCoordinates){
-                    if(event.getEventType()==MouseEvent.MOUSE_MOVED){
-                        Quarantine.setPreviewAreaCoordinates(new Point(event.getX(),event.getY()));
+                if (getQuarantineCoordinates) {
+                    if (event.getEventType() == MouseEvent.MOUSE_MOVED) {
+                        Quarantine.setPreviewAreaCoordinates(new Point(event.getX(), event.getY()));
                     }
                 }
             }
@@ -206,9 +222,9 @@ public class MainController implements Initializable {
         simulation.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
-                if(getQuarantineCoordinates){
-                    balls.startNewQuarantine(new Point(event.getX(),event.getY()));
-                    getQuarantineCoordinates=false;
+                if (getQuarantineCoordinates) {
+                    balls.startNewQuarantine(new Point(event.getX(), event.getY()));
+                    getQuarantineCoordinates = false;
                 }
 
             }
@@ -218,15 +234,23 @@ public class MainController implements Initializable {
     }
 
 
-    private void navigateToHomePage(){
+    private void navigateToHomePage() {
 
     }
+
     public void simulationTimer() {
+        /*
+        Starten die Sim Animation und bewegt fortlaufend die Bälle im Canvas, wo auch
+        die Logik visualisiert wird ob ein Ball mit einem andren Kollidiert und somit
+        infiziert hat. Die Bildfläche wird als Referenz an die drawing methoden weiter
+        gereicht und gezeichnet. Die Berechnung bzgl Geschwindigkeit wird durch die Zeit
+        zwischen den Frames kalkuliert und kann zusätzlich mit einem speedModifier beschleunigt werden
+         */
         animationTimer = new AnimationTimer() {
             @Override
             public void handle(long currentNanoTime) {
                 long curTimeMilli = TimeUnit.NANOSECONDS.toMillis(currentNanoTime);
-                double curTimeMS = TimeUnit.NANOSECONDS.toMillis(currentNanoTime - prevTime) ;
+                double curTimeMS = TimeUnit.NANOSECONDS.toMillis(currentNanoTime - prevTime);
                 double prevNanoTime = prevTime;
                 prevTime = TimeUnit.NANOSECONDS.toMillis(prevTime);
                 //System.out.println(curTimeMS);
@@ -235,12 +259,12 @@ public class MainController implements Initializable {
                 simulationGC.setFill(Color.BLACK);
                 simulationGC.fillRect(0, 0, 1000, 1000);
                 //Zeitunterschied zwischen diesem und vorherigen frame in 100stel sekunden
-                double deltaTimeSeconds=(double)(currentNanoTime-prevNanoTime)/10000000;
+                double deltaTimeSeconds = (double) (currentNanoTime - prevNanoTime) / 10000000;
                 //System.out.println(deltaTimeSeconds);
                 //handles everything sorrounding the Infectable balls
                 //System.out.println(deltaTimeSeconds);
-                simulationGC = balls.drawAndHandleTimestep(simulationGC, deltaTimeSeconds*speedModifier);
-                if(getQuarantineCoordinates){
+                simulationGC = balls.drawAndHandleTimestep(simulationGC, deltaTimeSeconds * speedModifier);
+                if (getQuarantineCoordinates) {
                     simulationGC = Quarantine.drawQuarantinePreviewArea(simulationGC);
                 }
 
@@ -268,26 +292,30 @@ public class MainController implements Initializable {
 
                 // InfectionStats.printCurStats();
 
+                //MONI den zwischenstand der Bälle in den JavaFX elementen darstellen in form von zahlen und text,sowie
+                //auch Graph
                 long infected = balls.getCountByState(InfectableBalls.InfectionStatus.INFECTED);
                 populationCount.setText(Integer.toString(SimulationValues.getBallCount()));
                 infectedCount.setText(Long.toString(infected));
                 susceptibleCount.setText(Long.toString(balls.getCountByState(InfectableBalls.InfectionStatus.SUSCEPTIBLE)));
                 removedCount.setText(Long.toString(balls.getCountByState(InfectableBalls.InfectionStatus.REMOVED)));
+
+                //Die geschwindigkeit der infizierten rate berechnen zwischen 2 frames und die differenze darstellen
                 long timeDifference = curTimeMilli - prevTime;
                 long infectionDifference = infected - prevInfections;
-                long infectionRate=0;
+                long infectionRate = 0;
                 if (timeDifference != 0) {
-                     infectionRate = infectionDifference/timeDifference;
+                    infectionRate = infectionDifference / timeDifference;
                 }
 
                 infectionrate.setText(Long.toString(infectionRate));
                 prevTime = currentNanoTime;
 
 
-
-                if(balls.curTime-lastCallTime>0.1){
+                if (balls.curTime - lastCallTime > 0.1) {
+                    //MONI Gecheckt ob die Bälle auch miteinander kollidiert sind
                     handleDataCollection();
-                    lastCallTime=balls.curTime;
+                    lastCallTime = balls.curTime;
                 }
 
 
@@ -309,17 +337,17 @@ public class MainController implements Initializable {
         }
     }*/
 
-    private void handleDataCollection(){
+    private void handleDataCollection() {
         double percentInfected = this.balls.getCountByState(InfectableBalls.InfectionStatus.INFECTED) / (double) SimulationValues.getBallCount();
         double percentSusceptible = this.balls.getCountByState(InfectableBalls.InfectionStatus.SUSCEPTIBLE) / (double) SimulationValues.getBallCount();
         double percentRemoved = this.balls.getCountByState(InfectableBalls.InfectionStatus.REMOVED) / (double) SimulationValues.getBallCount();
 
-        this.graphDataSet.add(new GraphStats(percentInfected,percentSusceptible,percentRemoved));
-        if(this.graphDataSet.size() > maxGraphDataPoints){
-           this.graphDataSet.removeFirst();
+        this.graphDataSet.add(new GraphStats(percentInfected, percentSusceptible, percentRemoved));
+        if (this.graphDataSet.size() > maxGraphDataPoints) {
+            this.graphDataSet.removeFirst();
         }
         this.drawGraph();
-        }
+    }
 
 
     private void drawGraph() {
@@ -344,7 +372,7 @@ public class MainController implements Initializable {
 
          */
         this.graphGC.clearRect(0, 0, GraphCanvasParams.getWidth(), GraphCanvasParams.getHeight());
-        if(this.graphDataSet.size() > 1 && lastDrawnData != this.graphDataSet.getLast()) {
+        if (this.graphDataSet.size() > 1 && lastDrawnData != this.graphDataSet.getLast()) {
             this.graphGC.setLineWidth(2);
 
             GraphStats prevGraphStats = null;
@@ -354,56 +382,55 @@ public class MainController implements Initializable {
             for (GraphStats graphStats : graphDataSet) {
                 if (prevGraphStats != null) {
                     this.graphGC.setStroke(Color.GRAY);
-                    this.graphGC.strokeLine(offsetX, (1 - prevGraphStats.percentRemoved )* GraphCanvasParams.getHeight(), offsetX + lineWidth, (1 - graphStats.percentRemoved) * GraphCanvasParams.getHeight());
+                    this.graphGC.strokeLine(offsetX, (1 - prevGraphStats.percentRemoved) * GraphCanvasParams.getHeight(), offsetX + lineWidth, (1 - graphStats.percentRemoved) * GraphCanvasParams.getHeight());
 
                     this.graphGC.setStroke(Color.RED);
-                    this.graphGC.strokeLine(offsetX,  (1- prevGraphStats.percentInfected)* GraphCanvasParams.getHeight(), offsetX + lineWidth, (1-graphStats.percentInfected) * GraphCanvasParams.getHeight());
+                    this.graphGC.strokeLine(offsetX, (1 - prevGraphStats.percentInfected) * GraphCanvasParams.getHeight(), offsetX + lineWidth, (1 - graphStats.percentInfected) * GraphCanvasParams.getHeight());
 
                     this.graphGC.setStroke(Color.BLUE);
-                    this.graphGC.strokeLine(offsetX, (1-prevGraphStats.percentSuspectible) * GraphCanvasParams.getHeight(), offsetX + lineWidth, (1-graphStats.percentSuspectible) * GraphCanvasParams.getHeight());
+                    this.graphGC.strokeLine(offsetX, (1 - prevGraphStats.percentSuspectible) * GraphCanvasParams.getHeight(), offsetX + lineWidth, (1 - graphStats.percentSuspectible) * GraphCanvasParams.getHeight());
 
                     offsetX += lineWidth;
 
                 }
 
                 this.graphGC.setFill(Color.GRAY);
-                this.graphGC.fillOval(offsetX - graphPointRadius, (1- graphStats.percentRemoved) * GraphCanvasParams.getHeight() - graphPointRadius,graphPointRadius*2, graphPointRadius*2);
+                this.graphGC.fillOval(offsetX - graphPointRadius, (1 - graphStats.percentRemoved) * GraphCanvasParams.getHeight() - graphPointRadius, graphPointRadius * 2, graphPointRadius * 2);
 
                 this.graphGC.setFill(Color.RED);
-                this.graphGC.fillOval(offsetX - graphPointRadius, (1-graphStats.percentInfected) * GraphCanvasParams.getHeight() - graphPointRadius,graphPointRadius*2, graphPointRadius*2);
+                this.graphGC.fillOval(offsetX - graphPointRadius, (1 - graphStats.percentInfected) * GraphCanvasParams.getHeight() - graphPointRadius, graphPointRadius * 2, graphPointRadius * 2);
 
                 this.graphGC.setFill(Color.BLUE);
-                this.graphGC.fillOval(offsetX - graphPointRadius, (1-graphStats.percentSuspectible) * GraphCanvasParams.getHeight() - graphPointRadius,graphPointRadius*2, graphPointRadius*2);
+                this.graphGC.fillOval(offsetX - graphPointRadius, (1 - graphStats.percentSuspectible) * GraphCanvasParams.getHeight() - graphPointRadius, graphPointRadius * 2, graphPointRadius * 2);
 
                 prevGraphStats = graphStats;
 
             }
 
         }
-        if(this.graphDataSet.size()>0){
+        if (this.graphDataSet.size() > 0) {
             lastDrawnData = this.graphDataSet.getLast();
         }
 
     }
-    private void resetPrevTime(){
+
+    private void resetPrevTime() {
         this.prevTime = System.nanoTime();
     }
 
-    private void startAnimationTimer(){
-        if(this.animationTimer != null){
+    private void startAnimationTimer() {
+        if (this.animationTimer != null) {
             this.animationTimer.start();
-           // this.balls.simulationResumed();
+            // this.balls.simulationResumed();
         }
     }
 
-    private void stopAnimationTimer(){
-        if(this.animationTimer != null){
-           // this.balls.simulationPaused();
+    private void stopAnimationTimer() {
+        if (this.animationTimer != null) {
+            // this.balls.simulationPaused();
             this.animationTimer.stop();
         }
     }
-
-
 
 
 }
