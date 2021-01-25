@@ -15,10 +15,11 @@
             xmlns:fx="http://javafx.com/fxml" fx:controller="at.ac.fhcampuswien.bouncingballs.controllers.Homepage" styleClass="homepage">
 
     <top>
-        <GridPane fx:id="title" alignment="TOP_CENTER" >
+        <GridPane alignment="TOP_CENTER" >
             <VBox>
-                <Label text=""></Label>
-                <Label text=""></Label> <Label text=""></Label>
+                <Label/>
+                <Label/>
+                <Label/>
                 <Label  text= "The Bugfixers Pandemic" GridPane.halignment="RIGHT" GridPane.rowIndex="16">
                     <font>
                         <Font name="System Bold" size="40.0" />
@@ -28,17 +29,17 @@
         </GridPane>
     </top>
 <center>
-    <GridPane fx:id="data" alignment="BASELINE_CENTER">
+    <GridPane alignment="BASELINE_CENTER">
         <VBox alignment="CENTER">
-            <Label text=""></Label>
-            <Label text="Population Size: "></Label>
+            <Label/>
+            <Label text="Population Size: "/>
             <TextField fx:id="pText" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
-            <Label text="Infectiousness: "></Label>
+            <Label text="Infectiousness: "/>
             <TextField fx:id="iText" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
-            <Label text="Ballradius: "></Label>
+            <Label text="Ballradius: "/>
             <TextField fx:id="bText" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
-            <Label text=""></Label>
-            <Button fx:id="button" onAction="#manageButton" prefWidth="200.0" prefHeight="100"
+            <Label/>
+            <Button onAction="#manageButton" prefWidth="200.0" prefHeight="100"
                     text="START" GridPane.columnIndex="0" GridPane.rowIndex="0" />
             <Text fx:id="actionTarget"
                   GridPane.columnIndex="1" GridPane.rowIndex="6"/>

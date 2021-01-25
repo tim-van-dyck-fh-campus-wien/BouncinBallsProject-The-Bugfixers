@@ -9,6 +9,7 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
@@ -31,9 +32,11 @@ public class Homepage {
 
     private ResourceBundle resources;
 
+
     @FXML protected void manageButton(ActionEvent event) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("main.fxml"));
+
+            FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("main.fxml"));    //Start the simulation by pressing the button
 
             String pTextNoSpace = pText.getText().replaceAll(" +","");
             String iTextNoSpace = iText.getText().replaceAll(" +","");
@@ -61,7 +64,7 @@ public class Homepage {
             InfectableBallsParams.setBallradius(ballRadius);
 
 
-            if (population > 5000) {
+            if (population > 5000) {            //check Population
                 Alert errorAlert = new Alert(Alert.AlertType.ERROR);
                 errorAlert.setHeaderText("Input not valid");
                 errorAlert.setContentText("The Population size must be between 1 and 5000!");
@@ -69,13 +72,13 @@ public class Homepage {
                 ;
 
 
-            }else if(ballRadius <= 0 || population <= 0 || initialInfections <= 0){
+            }else if(ballRadius <= 0 || population <= 0 || initialInfections <= 0){      //check if positive number
                 Alert errorAlert = new Alert(Alert.AlertType.ERROR);
                 errorAlert.setHeaderText("Input not valid");
                 errorAlert.setContentText("Please enter values greater than 0!");
                 errorAlert.showAndWait();
             }
-        else if(ballRadius > 20 ){
+        else if(ballRadius > 20 ){              //check radius
             Alert errorAlert = new Alert(Alert.AlertType.ERROR);
             errorAlert.setHeaderText("Input not valid");
             errorAlert.setContentText("Ballradius must not be greater than 20!");
@@ -95,7 +98,7 @@ public class Homepage {
 
             else {
 
-                MainController controller = new MainController();
+                MainController controller = new MainController();               //start the simulation
                 loader.setController(controller);
                 Parent root = loader.load();
                 Stage stage = new Stage();
