@@ -1,16 +1,15 @@
 package at.ac.fhcampuswien.bouncingballs.balls;
 
 //Quadtree for fast collision detection/Detection which points might collide
+/*Basic principles based on the Video Series by
+*'The Coding Train' on YouTube
+*https://www.youtube.com/watch?v=OJxEcs0w_kE
+ */
 
 import at.ac.fhcampuswien.bouncingballs.shapes.Circle;
 import at.ac.fhcampuswien.bouncingballs.shapes.Point;
 import at.ac.fhcampuswien.bouncingballs.shapes.Rectangle;
-import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.paint.Color;
-
-import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class QuadTree{
     //Describes the boundary of this instance of the quadtree, thus the range in the full canvas covered by this Quadtree

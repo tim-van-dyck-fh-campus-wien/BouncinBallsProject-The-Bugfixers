@@ -31,6 +31,7 @@ public class Quarantine {
         return gc;
     }
 
+
     public static void setPreviewAreaCoordinates(Point cord){
         tempQuarantinePreviewArea = new Rectangle(cord.x,cord.y,SimulationValues.getQuarantineSize(),SimulationValues.getQuarantineSize());
     }

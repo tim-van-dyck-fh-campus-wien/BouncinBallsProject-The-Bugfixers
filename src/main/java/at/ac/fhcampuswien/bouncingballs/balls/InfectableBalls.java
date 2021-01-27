@@ -26,7 +26,7 @@ public class InfectableBalls {
 
     List<InfectableBall> balls = new ArrayList<>();
     public QuadTree tree = new QuadTree(new Rectangle(SimulationCanvasParams.getWidth() / 2, SimulationCanvasParams.getHeight() / 2, SimulationCanvasParams.getWidth() / 2, SimulationCanvasParams.getHeight() / 2), (byte) 8);
-    //CurrentTime in   second
+    //CurrentTime in   seconds
     public double curTime=0;
     //needed for correct collision handling!
     public double previousTimeDifference=-1;
@@ -41,7 +41,6 @@ public class InfectableBalls {
         this.curTime=0;
         this.balls.clear();
     }
-    //Function used to generate the balls from scratch and assign the start positions to them.
 
     public static boolean checkIfBallsFitInCanvas(int population, int initialInfected){
         //Space the balls evenly so that no balls overlap on initialization
@@ -54,6 +53,7 @@ public class InfectableBalls {
         return false;
     }
 
+    //Function used to generate the balls from scratch and assign the start positions to them.
     //returns false if not enough space
     public boolean generateBalls(int population, int initialInfected) {
         Random rand = new Random();
@@ -102,7 +102,6 @@ public class InfectableBalls {
     //draws the balls, moves them, handles collisions etc.
     public GraphicsContext drawAndHandleTimestep(GraphicsContext gc, double time) {
         this.curTime= this.curTime + (time/100);
-       // System.out.println("curtime"+this.curTime);
         this.resetQuadtree();
         this.fillQuadtree();
         //The collision Handling has to happen prior to the move operation of the balls!
@@ -116,13 +115,10 @@ public class InfectableBalls {
               if(quarantine.refreshQuarantineStatus(this.curTime)){
                   this.endQuarantine();
               }
-
               checkQuarantineAreaCollisions();
           }
         }
         return draw(gc);
-
-
     }
     private void endQuarantine(){
         for(InfectableBall el:balls){
@@ -169,7 +165,7 @@ public class InfectableBalls {
         this.tree = new QuadTree(new Rectangle(SimulationCanvasParams.getWidth() / 2, SimulationCanvasParams.getHeight() / 2, SimulationCanvasParams.getWidth() / 2, SimulationCanvasParams.getHeight() / 2), (byte) 8);
     }
 
-    //Testmethode zur ersten Simulation des Ansteckungsmechanismus
+    //handle collisions and infections and draw infectious circle if needed
     private GraphicsContext handleCollision(GraphicsContext gc,double currentTimeDifference) {
         //List <InfectableBall> collisionHandled = new ArrayList<>();
         //Dummy Liste bestehend aus allen Bällen,
@@ -183,16 +179,8 @@ public class InfectableBalls {
         //Falls Bälle gefunden werden, werden diese infiziert
         for (int c = 0; c < toHandle.size(); ) {
             InfectableBall ball = toHandle.get(c);
-            //Zeichnen des Infektionskreises um den derzeitigen Ball
-            //gc.setStroke(Color.WHITE);
-            //gc.strokeOval(ball.getCoordinates().x-infectionRadius,ball.getCoordinates().y-infectionRadius,2*infectionRadius,2*infectionRadius);
-            //gc.strokeRect(ball.getCoordinates().x-infectionRadius,ball.getCoordinates().y-infectionRadius,2*infectionRadius,2*infectionRadius);
             //Erstellen des Kreises welcher dem Infektionsradius entspricht, um den Quadtree zu durchsuchen
             Circle infectionCircle = new Circle(ball.getCoordinates().x, ball.getCoordinates().y, infectionRadius * 2);
-            // Rectangle infectionRect = new Rectangle(ball.getCoordinates().x,ball.getCoordinates().y,infectionRadius,infectionRadius);
-
-            //Suche nur nach Bällen welche in der Nähe des Balls sind, falls der derzeitige Ball infiziert ist
-            //Denn nur dann kann der Ball einen anderen Ball infizieren
             for (Point point : tree.query(infectionCircle)) {
                 //Nur jener ball soll infiziert werden, welcher noch nicht infiziert ist
                 if (point.id != ball.getIdOfInstance()) {
@@ -203,13 +191,10 @@ public class InfectableBalls {
                     for (InfectableBall el : res) {
                         //Infiziere jenen ball welcher im Infektionsradius des ürsprünglichen infizierten Balls ist
                         if (ball.infectionStatus == InfectionStatus.INFECTED) {
-                            //el.infectionStatus = InfectableBall.InfectionStatus.INFECTED;
                             el.infectBall(this.curTime);
                         } else if (el.infectionStatus == InfectionStatus.INFECTED) {
-                            //ball.infectionStatus= InfectableBall.InfectionStatus.INFECTED;
                             ball.infectBall(this.curTime);
                         }
-                        // System.out.println(el.print());
                         Point firstVelocityVector = ball.getVelocityVector();
                         Point secondVelocityVector = el.getVelocityVector();
                         Point newFirstVelocityVector = new Point(0, 0);

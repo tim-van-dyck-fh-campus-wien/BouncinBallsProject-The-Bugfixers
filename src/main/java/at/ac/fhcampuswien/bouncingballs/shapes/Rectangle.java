@@ -22,7 +22,7 @@ public class Rectangle {
         public boolean intersects(Rectangle range){
             return !(range.x-range.w > this.x+this.w|| range.x+range.w<this.x-this.w||range.y-range.h > this.y+this.h|| range.y+range.h < this.y -this.h);
         }
-        //check if the given circle intersects with the rectangle, this exact method is implemented with the asumption that the boundary is indeed a rectangle
+        //check if the given circle intersects with the rectangle, this exact method is implemented with the asumption that the boundary is indeed a square
         //thus it may return wrong values when the rectangle is not a square!
         public boolean intersects(Circle range){
             //calculate distance between the circles center and the rectangles center

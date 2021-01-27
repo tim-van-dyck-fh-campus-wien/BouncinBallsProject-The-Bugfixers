@@ -250,47 +250,19 @@ public class MainController implements Initializable {
             @Override
             public void handle(long currentNanoTime) {
                 long curTimeMilli = TimeUnit.NANOSECONDS.toMillis(currentNanoTime);
-                double curTimeMS = TimeUnit.NANOSECONDS.toMillis(currentNanoTime - prevTime);
                 double prevNanoTime = prevTime;
                 prevTime = TimeUnit.NANOSECONDS.toMillis(prevTime);
-                //System.out.println(curTimeMS);
                 //Clear canvas, set BackgroundColor
                 simulationGC.clearRect(0, 0, 1000, 1000);
                 simulationGC.setFill(Color.BLACK);
                 simulationGC.fillRect(0, 0, 1000, 1000);
                 //Zeitunterschied zwischen diesem und vorherigen frame in 100stel sekunden
                 double deltaTimeSeconds = (double) (currentNanoTime - prevNanoTime) / 10000000;
-                //System.out.println(deltaTimeSeconds);
                 //handles everything sorrounding the Infectable balls
-                //System.out.println(deltaTimeSeconds);
                 simulationGC = balls.drawAndHandleTimestep(simulationGC, deltaTimeSeconds * speedModifier);
                 if (getQuarantineCoordinates) {
                     simulationGC = Quarantine.drawQuarantinePreviewArea(simulationGC);
                 }
-
-
-                //Quadtree Test
-
-                /*double x,y,w,h;
-                x=SimulationCanvasParams.getWidth()/2;
-                y=SimulationCanvasParams.getHeight()/2;
-                w=20;
-                h=20;
-                double r=100;
-                Circle searchCirc = new Circle(x,y,r);
-
-                Rectangle searchRange = new Rectangle(x,y,w,h);
-                simulationGC.setStroke(Color.ROSYBROWN);
-               // simulationGC.strokeRect(x-w,y-h,w*2,h*2);
-                simulationGC.fillOval(x-r,y-r,r*2,r*2);
-                for(Point p: balls.tree.query(searchCirc)){
-                    simulationGC.setFill(Color.BLUEVIOLET);
-                    double radius = 5;
-                    simulationGC.fillOval(p.x-radius,p.y-radius,radius*2,radius*2);
-                }*/
-                // InfectionStats.infektionsgeschehen();
-
-                // InfectionStats.printCurStats();
 
                 //MONI den zwischenstand der Bälle in den JavaFX elementen darstellen in form von zahlen und text,sowie
                 //auch Graph
@@ -323,19 +295,6 @@ public class MainController implements Initializable {
         };
     }
 
-    /*private void startDataTimer(){
-        if(dataTimer == null) {
-            dataTimer = Executors.newScheduledThreadPool(1);
-            dataTimer.scheduleAtFixedRate(this::handleDataCollection, 0, 100, TimeUnit.MILLISECONDS);
-        }
-    }
-
-    private void stopDataTimer() {
-        if (dataTimer != null) {
-            dataTimer.shutdown();
-            dataTimer = null;
-        }
-    }*/
 
     private void handleDataCollection() {
         double percentInfected = this.balls.getCountByState(InfectableBalls.InfectionStatus.INFECTED) / (double) SimulationValues.getBallCount();

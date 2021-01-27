@@ -7,7 +7,6 @@ import at.ac.fhcampuswien.bouncingballs.shapes.Point;
 import at.ac.fhcampuswien.bouncingballs.shapes.Rectangle;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
-import org.w3c.dom.css.Rect;
 
 import java.util.Random;
 
@@ -16,11 +15,8 @@ public class InfectableBall {
     InfectableBalls.InfectionStatus infectionStatus = InfectableBalls.InfectionStatus.SUSCEPTIBLE;
     private Point coordinates = new Point(0, 0);
     private Point velocityVector = new Point(0, 0);
-    private int id;
-    //Counts how many Infectable balls have been generated, needed for the corresponding id identifying the Object
-    //Time where the ball was infected
-    private double startOfInfection;
-    private double timeElapsedSinceInfection;
+    private int id;//needed for later identification inside QuadTree
+    private double startOfInfection;//Time when the ball was infected
     private boolean isQuarantined=false;
 
     public Point getVelocityVector() {
@@ -39,8 +35,7 @@ public class InfectableBall {
         this.coordinates = coordinates;
     }
 
-    //MONI initiInfected ist der ursprüngliche Zustand am Anfang der Simulation
-    //MONI identifier ist eine voll zahl um Bälle von einander zu unterscheiden
+
     public InfectableBall(Point coordinates, int identifier, boolean initInfected) {
         this.id = identifier;
         //If initInfected is true => ball should be initiated as infected!
@@ -62,41 +57,14 @@ public class InfectableBall {
             this.velocityVector.x = rn.nextInt(20) - 10;
             this.velocityVector.y = rn.nextInt(20) - 10;
         }
-
-
         //Divide by "Einheitsvektor", and multiply by the desired velocity to get the correct velocity
         double lengthOfVector = Math.sqrt(Math.pow(this.velocityVector.x, 2) + Math.pow(this.velocityVector.y, 2));
         this.velocityVector.x = this.velocityVector.x / lengthOfVector;
         this.velocityVector.y = this.velocityVector.y / lengthOfVector;
         this.velocityVector.x = this.velocityVector.x * InfectableBallsParams.velocity;
         this.velocityVector.y = this.velocityVector.y * InfectableBallsParams.velocity;
-        lengthOfVector = Math.sqrt(Math.pow(this.velocityVector.x, 2) + Math.pow(this.velocityVector.y, 2));
-       // System.out.println("len" + lengthOfVector);
     }
 
-    public void genRandomCoordinatesVelocity() {
-        Random rn = new Random();
-
-        //generate random coordiantes, leave space of the balls radius
-        coordinates.x = (double) rn.nextInt(SimulationCanvasParams.getWidth() - InfectableBallsParams.ballradius * 2) + InfectableBallsParams.ballradius;
-        coordinates.y = (double) rn.nextInt(SimulationCanvasParams.getHeight() - InfectableBallsParams.ballradius * 2) + InfectableBallsParams.ballradius;
-
-        //exclude degrees of multiples of 90 degrees while computing the values for the velocity vector
-        while (this.velocityVector.x == 0 || this.velocityVector.y == 0) {
-            this.velocityVector.x = rn.nextInt(20) - 10;
-            this.velocityVector.y = rn.nextInt(20) - 10;
-        }
-
-
-        //Divide by "Einheitsvektor", and multiply by the desired velocity to get the correct velocity
-        double lengthOfVector = Math.sqrt(Math.pow(this.velocityVector.x, 2) + Math.pow(this.velocityVector.y, 2));
-        this.velocityVector.x = this.velocityVector.x / lengthOfVector;
-        this.velocityVector.y = this.velocityVector.y / lengthOfVector;
-        this.velocityVector.x = this.velocityVector.x * InfectableBallsParams.velocity;
-        this.velocityVector.y = this.velocityVector.y * InfectableBallsParams.velocity;
-        lengthOfVector = Math.sqrt(Math.pow(this.velocityVector.x, 2) + Math.pow(this.velocityVector.y, 2));
-       // System.out.println("len" + lengthOfVector);
-    }
 
     public GraphicsContext draw(GraphicsContext gc) {
         if (infectionStatus == InfectableBalls.InfectionStatus.SUSCEPTIBLE) {
@@ -176,6 +144,8 @@ public class InfectableBall {
             }
 
         }
+        //je geringer der Abstand zur Vertikalen/Horizontalen "edge" ist, desto wahrscheinlicher ist eine kollision mit dieser Kante
+        //die obere Kollisionserkennung spricht auf beide Kanten an, die finale entscheidung fällt somit anhand dieser Unterscheidung
         if(deltaHorizontalEdge!=-1&&deltaVerticalEdge!=-1){
             if(Math.abs(deltaHorizontalEdge)>Math.abs(deltaVerticalEdge)){
                 this.velocityVector.y=-this.velocityVector.y;
